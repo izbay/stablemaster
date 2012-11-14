@@ -1,9 +1,38 @@
 package com.github.izbay.util;
 
-public class Settings {
+import java.io.File;
 
-    public enum Setting {
-        BASE_PRICE("values.base", 8),
+import net.citizensnpcs.api.util.DataKey;
+import net.citizensnpcs.api.util.YamlStorage;
+
+import com.github.izbay.StablemasterPlugin;
+
+public class Settings {
+	private final YamlStorage config;
+
+	public Settings(StablemasterPlugin plugin) {
+		File file = new File(plugin.getDataFolder() + File.separator + "config.yml");
+		config = new YamlStorage(file, "Stablemaster Configuration");
+	}
+
+	public void load() {
+	        config.load();
+	        DataKey root = config.getKey("");
+	        for (Setting setting : Setting.values())
+	            if (!root.keyExists(setting.path))
+	                root.setRaw(setting.path, setting.get());
+	            else
+	                setting.set(root.getRaw(setting.path));
+
+	        //save();
+	    }
+
+	    public YamlStorage getConfig() {
+	        return config;
+	    }
+
+public enum Setting {
+    	BASE_PRICE("values.base", 8),
         PRICE_PER_DAY("values.perday", 8),
         PIG_BASE_PRICE("values.pig", 50),
         NOBLE_COOLDOWN("values.cooldown", 4),
@@ -18,7 +47,7 @@ public class Settings {
         DEBT_MESSAGE("text.debt", "§eI still need you to pay up from last time. It was §a<DEBT>§e."),
         PAID_MESSAGE("text.paid", "§eThanks! Now what can I do for you?"),
         STOW_MESSAGE("text.stow", "§eDon't you worry! I'll take fine care of her!"),
-        TAKE_MESSAGE("text.take", "§eShe's been very well behaved."),
+        TAKE_MESSAGE("text.take", "§eShe's been very well behaved. Were you ready to check out?"),
         TAKE2_MESSAGE("text.take2", "§eIt comes to §a<TOTAL_PRICE>§e, for <DAYS> days."),
         
         NOBLE_OFFER("noble.offer", "§eWould you like me to watch your Boar?"),
@@ -27,10 +56,16 @@ public class Settings {
         NOBLE_TAKE("noble.take", "§eHere he is, your grace. Bathed, brushed, and pampered!"),
         NOBLE_DENY("noble.deny", "§eAnother one? I can't afford that. It'd be §a<MOUNT_PRICE>§e.");
 
+        private String path;
         private Object value;
 
         Setting(String path, Object value) {
+            this.path = path;
             this.value = value;
+        }
+
+        public boolean asBoolean() {
+            return (Boolean) value;
         }
 
         public double asDouble() {
@@ -47,6 +82,14 @@ public class Settings {
 
         public String asString() {
             return value.toString();
+        }
+
+        private Object get() {
+            return value;
+        }
+
+        private void set(Object value) {
+            this.value = value;
         }
     }
 }

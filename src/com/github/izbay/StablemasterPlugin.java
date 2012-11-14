@@ -17,12 +17,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.izbay.util.Settings;
+
+
+
 
 public class StablemasterPlugin extends JavaPlugin {
 	public static StablemasterPlugin plugin;
 	public Economy economy;
 	private boolean hasCititrader = false;
-
+	
 	// Logger.
 	public final Logger logger = Logger.getLogger("Minecraft");
 
@@ -42,6 +46,10 @@ public class StablemasterPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig();
+		Settings config = new Settings(this);
+		config.load();
+		
+		getServer().getPluginManager().registerEvents(new MountListener(null),this); 
 		
 		File s = new File(getDataFolder() + File.separator + "stabled.bin");
 		File c = new File(getDataFolder() + File.separator + "cooldown.bin");

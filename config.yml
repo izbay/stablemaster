@@ -8,8 +8,7 @@ values:
  # Cost to purchase a saddled pig from the Stablemaster.
  pig: 50
  # Cooldown for free pigs, in hours.
- cooldown: 4	
-
+ cooldown: 4
 
 # Default messages.
 text:
@@ -23,8 +22,9 @@ text:
  debt: "§eI still need you to pay up from last time. It was §a<DEBT>§e." 
  paid: "§eThanks! Now what can I do for you?"
  stow: "§eDon't you worry! I'll take fine care of her!"
- take: "§eShe's been very well behaved."
+ take: "§eShe's been very well behaved. Were you ready to check out?"
  take2: "§eIt comes to §a<TOTAL_PRICE>§e, for <DAYS> days."
+ take3: "§eWere you ready to check out?"
 
 # Noble messages (Admins or Donators).
 noble: 

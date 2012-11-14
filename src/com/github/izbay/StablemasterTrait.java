@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import com.github.izbay.util.Settings.Setting;
 
 import net.citizensnpcs.api.trait.Trait;
+import net.citizensnpcs.api.util.DataKey;
 
 public class StablemasterTrait extends Trait implements Listener {
 
@@ -24,14 +25,11 @@ public class StablemasterTrait extends Trait implements Listener {
 	static Map<String, Long> hasStabled = new HashMap<String, Long>();
 	static Map<String, Long> nobleCooldown = new HashMap<String, Long>();
 	static Map<String, Integer> hasDebt = new HashMap<String, Integer>();
-
-	public StablemasterTrait() {
-		super("stablemaster");
-		plugin = (StablemasterPlugin) Bukkit.getServer().getPluginManager()
-				.getPlugin("Stablemaster");
-	}
-
-	// Defaults
+	private final Map<String, Boolean> mountWatcher = new HashMap<String, Boolean>();
+	
+	
+	
+// Defaults
 	public String costMsg = Setting.COST_MESSAGE.asString();
 	public String insufficientFundsMsg = Setting.FUNDS_MESSAGE.asString();
 	public String invalidMountMsg = Setting.INVALID_MESSAGE.asString();
@@ -58,7 +56,61 @@ public class StablemasterTrait extends Trait implements Listener {
 
 	
 	
+	public StablemasterTrait() {
+		super("stablemaster");
+		plugin = (StablemasterPlugin) Bukkit.getServer().getPluginManager()
+				.getPlugin("Stablemaster");
+	}
 	
+	
+	
+	@Override
+	public void load(DataKey key) {
+		// Override defaults if they exist
+		if (key.keyExists("values.base"))
+			basePrice = key.getInt("values.base");
+		if (key.keyExists("values.perday"))
+			pricePerDay = key.getInt("values.perday");
+		if (key.keyExists("values.pig"))
+			pigBasePrice = key.getInt("values.pig");
+		if (key.keyExists("values.cooldown"))
+			nobleCooldownLen = key.getDouble("values.cooldown");
+		
+		if (key.keyExists("text.cost"))
+			costMsg = key.getString("text.cost");
+		if (key.keyExists("text.funds"))
+			insufficientFundsMsg = key.getString("text.funds");
+		if (key.keyExists("text.invalid"))
+			invalidMountMsg = key.getString("text.invalid");
+		if (key.keyExists("text.already"))
+			alreadyMountMsg = key.getString("text.already");
+		if (key.keyExists("text.sale"))
+			saleMsg = key.getString("text.sale");
+		if (key.keyExists("text.give"))
+			giveMsg = key.getString("text.give");
+		if (key.keyExists("text.short"))
+			shortMsg = key.getString("text.short");
+		if (key.keyExists("text.debt"))
+			debtMsg = key.getString("text.debt");
+		if (key.keyExists("text.paid"))
+			paidMsg = key.getString("text.paid");
+		if (key.keyExists("text.stow"))
+			stowMsg = key.getString("text.stow");
+		if (key.keyExists("text.take"))
+			takeMsg = key.getString("text.take");
+		if (key.keyExists("text.take2"))
+			take2Msg = key.getString("text.take2");
+		if (key.keyExists("noble.offer"))
+			nobleOfferMsg = key.getString("noble.offer");
+		if (key.keyExists("noble.stow"))
+			nobleStowMsg = key.getString("noble.stow");
+		if (key.keyExists("noble.free"))
+			nobleFreeMsg = key.getString("noble.free");
+		if (key.keyExists("noble.take"))
+			nobleTakeMsg = key.getString("noble.take");
+		if (key.keyExists("noble.deny"))
+			nobleDenyMsg = key.getString("noble.deny");
+	}
 	
 	private void getPig(Player player) {
 
@@ -78,10 +130,16 @@ public class StablemasterTrait extends Trait implements Listener {
 				|| System.currentTimeMillis() >= isChatting.get(player
 						.toString()) + 10 * 1000) {
 			isChatting.put(player.toString(), System.currentTimeMillis());
+			mountWatcher.put(player.toString(), player.isInsideVehicle());
 			return false;
 		} else {
-			isChatting.remove(player.toString());
-			return true;
+			if ((mountWatcher.get(player.toString()) && player.isInsideVehicle()) || (!mountWatcher.get(player.toString()) && !player.isInsideVehicle())){
+				isChatting.remove(player.toString());
+				mountWatcher.remove(player.toString());
+				return true;
+			} else
+				mountWatcher.put(player.toString(), player.isInsideVehicle());
+				return false;
 		}
 	}
 
@@ -138,6 +196,7 @@ public class StablemasterTrait extends Trait implements Listener {
 								player.sendMessage(nobleTakeMsg.replace(
 										"<MOUNT_PRICE>",
 										plugin.econFormat(pigBasePrice)));
+								hasStabled.remove(player.toString());
 								getPig(player);
 							} else
 								player.sendMessage(insufficientFundsMsg);
@@ -237,4 +296,27 @@ public class StablemasterTrait extends Trait implements Listener {
 			}
 		}
 	}
+	/*
+	@Override
+	public void save(DataKey key) {
+
+		key.setString("messages.busy-with-player", busyWithPlayerMsg);
+		key.setString("messages.busy-with-reforge", busyReforgingMsg);
+		key.setString("messages.cost", costMsg);
+		key.setString("messages.invalid-item", invalidItemMsg);
+		key.setString("messages.start-reforge", startReforgeMsg);
+		key.setString("messages.successful-reforge", successMsg);
+		key.setString("messages.fail-reforge", failMsg);
+		key.setString("messages.insufficient-funds", insufficientFundsMsg);
+		key.setString("messages.cooldown-not-expired", cooldownUnexpiredMsg);
+		key.setString("messages.item-changed-during-reforge", itemChangedMsg);
+		key.setInt("delays-in-seconds.minimum", minReforgeDelay);
+		key.setInt("delays-in-seconds.maximum", maxReforgeDelay);
+		key.setInt("delays-in-seconds.reforge-cooldown", reforgeCooldown);
+		key.setInt("percent-chance-to-fail-reforge", failChance);
+		key.setInt("percent-chance-for-extra-enchantment", extraEnchantmentChance);
+		key.setInt("maximum-enchantments", maxEnchantments);
+		key.setBoolean("drop-item", dropItem);
+	}
+	*/
 }
