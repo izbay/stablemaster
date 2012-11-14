@@ -1,5 +1,10 @@
 package com.github.izbay;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 public class StablemasterPlugin extends JavaPlugin {
 	public static StablemasterPlugin plugin;
 	public Economy economy;
@@ -22,6 +28,13 @@ public class StablemasterPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		try {
+			SLAPI.save(StablemasterTrait.hasStabled, getDataFolder() + File.separator + "stabled.bin");
+			SLAPI.save(StablemasterTrait.nobleCooldown, getDataFolder() + File.separator + "cooldown.bin");
+			SLAPI.save(StablemasterTrait.hasDebt, getDataFolder() + File.separator + "debt.bin");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		getLogger().log(Level.INFO,
 				" v" + getDescription().getVersion() + " disabled.");
 	}
@@ -30,8 +43,28 @@ public class StablemasterPlugin extends JavaPlugin {
 	public void onEnable() {
 		this.saveDefaultConfig();
 		
-		getServer().getPluginManager().registerEvents(new
-		MountListener(null),this); 
+		File s = new File(getDataFolder() + File.separator + "stabled.bin");
+		File c = new File(getDataFolder() + File.separator + "cooldown.bin");
+		File d = new File(getDataFolder() + File.separator + "debt.bin");
+		if (s.exists() && c.exists() && d.exists()){
+			try{
+				StablemasterTrait.hasStabled = SLAPI.load(getDataFolder() + File.separator + "stabled.bin");
+				StablemasterTrait.nobleCooldown = SLAPI.load(getDataFolder() + File.separator + "cooldown.bin");
+				StablemasterTrait.hasDebt = SLAPI.load(getDataFolder() + File.separator + "debt.bin");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			try{
+			s.createNewFile();
+			c.createNewFile();
+			d.createNewFile();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		getServer().getPluginManager().registerEvents(new MountListener(null),
+				this);
 
 		// Check for Cititrader
 		if (getServer().getPluginManager().getPlugin("CitiTrader") != null) {
@@ -50,15 +83,17 @@ public class StablemasterPlugin extends JavaPlugin {
 			return;
 		}
 
-		CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(StablemasterTrait.class).withName("stablemaster"));
+		CitizensAPI.getTraitFactory().registerTrait(
+				net.citizensnpcs.api.trait.TraitInfo.create(
+						StablemasterTrait.class).withName("stablemaster"));
 
 		getLogger().log(Level.INFO,
 				" v" + getDescription().getVersion() + " enabled.");
 	}
 
-	public StablemasterTrait getStablemaster(NPC npc){
+	public StablemasterTrait getStablemaster(NPC npc) {
 
-		if (npc !=null && npc.hasTrait(StablemasterTrait.class)){
+		if (npc != null && npc.hasTrait(StablemasterTrait.class)) {
 			return npc.getTrait(StablemasterTrait.class);
 		}
 
@@ -81,28 +116,24 @@ public class StablemasterPlugin extends JavaPlugin {
 			}
 		}
 	}
-	// Read Config
-	public String costMsg = StablemasterPlugin.this.getConfig().getString("text.base");
-	public String insufficientFundsMsg = StablemasterPlugin.this.getConfig().getString("text.funds");
-	public String invalidMountMsg = StablemasterPlugin.this.getConfig().getString("text.invalid");
-	public String alreadyMountMsg = StablemasterPlugin.this.getConfig().getString("text.already");
-	public String saleMsg = StablemasterPlugin.this.getConfig().getString("text.sale");
-	public String giveMsg = StablemasterPlugin.this.getConfig().getString("text.give");
-	public String shortMsg = StablemasterPlugin.this.getConfig().getString("text.short");
-	public String debtMsg = StablemasterPlugin.this.getConfig().getString("text.debt");
-	public String paidMsg = StablemasterPlugin.this.getConfig().getString("text.paid");
-	public String stowMsg = StablemasterPlugin.this.getConfig().getString("text.stow");
-	public String takeMsg = StablemasterPlugin.this.getConfig().getString("text.take");
-	public String take2Msg = StablemasterPlugin.this.getConfig().getString("text.take2");
-	public String nobleOfferMsg = StablemasterPlugin.this.getConfig().getString("noble.offer");
-	public String nobleStowMsg = StablemasterPlugin.this.getConfig().getString("noble.stow");
-	public String nobleFreeMsg = StablemasterPlugin.this.getConfig().getString("noble.free");
-	public String nobleTakeMsg = StablemasterPlugin.this.getConfig().getString("noble.take");
-	public String nobleDenyMsg = StablemasterPlugin.this.getConfig().getString("noble.deny");
 
-	public Integer basePrice = StablemasterPlugin.this.getConfig().getInt("values.base");
-	public Integer pricePerDay = StablemasterPlugin.this.getConfig().getInt("values.perday");
-	public Integer pigBasePrice = StablemasterPlugin.this.getConfig().getInt("values.pig");
+	public static class SLAPI {
+		public static <T extends Object> void save(T obj, String path)
+				throws Exception {
+			ObjectOutputStream oos = new ObjectOutputStream(
+					new FileOutputStream(path));
+			oos.writeObject(obj);
+			oos.flush();
+			oos.close();
+		}
 
-	public Double nobleCooldownLen = StablemasterPlugin.this.getConfig().getDouble("values.cooldown");
+		public static <T extends Object> T load(String path) throws Exception {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(
+					path));
+			@SuppressWarnings("unchecked")
+			T result = (T) ois.readObject();
+			ois.close();
+			return result;
+		}
+	}
 }
