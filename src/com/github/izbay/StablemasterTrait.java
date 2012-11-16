@@ -53,6 +53,7 @@ public class StablemasterTrait extends Trait implements Listener {
 	public Integer pigBasePrice = Setting.PIG_BASE_PRICE.asInt();
 
 	public Double nobleCooldownLen = Setting.NOBLE_COOLDOWN.asDouble();
+	public static Boolean mobLock = Setting.MOB_LOCK.asBoolean();
 
 	
 	
@@ -75,6 +76,8 @@ public class StablemasterTrait extends Trait implements Listener {
 			pigBasePrice = key.getInt("values.pig");
 		if (key.keyExists("values.cooldown"))
 			nobleCooldownLen = key.getDouble("values.cooldown");
+		if (key.keyExists("values.moblock"))
+			mobLock = key.getBoolean("values.moblock");
 		
 		if (key.keyExists("text.cost"))
 			costMsg = key.getString("text.cost");
@@ -125,6 +128,7 @@ public class StablemasterTrait extends Trait implements Listener {
 		((Pig) piggie).setSaddle(true);
 	}
 
+	//	Move on to second action from NPC iff player remains mounted/dismounted.
 	private boolean chatCheck(Player player) {
 		if (isChatting.get(player.toString()) == null
 				|| System.currentTimeMillis() >= isChatting.get(player
@@ -143,6 +147,7 @@ public class StablemasterTrait extends Trait implements Listener {
 		}
 	}
 
+	//	How many days (86,400 seconds)?
 	private int daysStabled(Player player) {
 		return (int) ((System.currentTimeMillis() - hasStabled.get(player
 				.toString())) / (86400 * 1000));
@@ -170,6 +175,7 @@ public class StablemasterTrait extends Trait implements Listener {
 						plugin.econFormat(hasDebt.get(player.toString()))));
 			}
 		}
+		
 		// On foot: Pickup or Buy
 		else if (player.getVehicle() == null
 				&& player.hasPermission("stablemaster.stable")) {
@@ -206,7 +212,7 @@ public class StablemasterTrait extends Trait implements Listener {
 					}
 				}
 
-				// Others
+			// Others
 			} else {
 				if (hasStabled.get(player.toString()) != null) {
 					if (chatCheck(player)) {
@@ -236,7 +242,7 @@ public class StablemasterTrait extends Trait implements Listener {
 									"<DAYS>", "" + daysStabled(player)));
 					}
 
-					// Looks like you're buying one!
+				// Looks like you're buying one!
 				} else {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, pigBasePrice)) {
@@ -252,13 +258,13 @@ public class StablemasterTrait extends Trait implements Listener {
 				}
 			}
 
-			// Invalid or No Permission = No Service!
+		// Invalid or No Permission = No Service!
 		} else if (!(player.getVehicle() instanceof Pig)
 				|| !player.hasPermission("stablemaster.stable")) {
 			player.sendMessage(invalidMountMsg);
 			return;
 
-			// Drop off.
+		// Drop off.
 		} else {
 			if (hasStabled.get(player.toString()) == null) {
 
@@ -272,7 +278,7 @@ public class StablemasterTrait extends Trait implements Listener {
 					} else
 						player.sendMessage(nobleOfferMsg);
 
-					// Others
+				// Others
 				} else {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, basePrice)) {
@@ -290,33 +296,10 @@ public class StablemasterTrait extends Trait implements Listener {
 								plugin.econFormat(pricePerDay)));
 				}
 
-				// Already has your pig!
+			// Already has your pig!
 			} else {
 				player.sendMessage(alreadyMountMsg);
 			}
 		}
 	}
-	/*
-	@Override
-	public void save(DataKey key) {
-
-		key.setString("messages.busy-with-player", busyWithPlayerMsg);
-		key.setString("messages.busy-with-reforge", busyReforgingMsg);
-		key.setString("messages.cost", costMsg);
-		key.setString("messages.invalid-item", invalidItemMsg);
-		key.setString("messages.start-reforge", startReforgeMsg);
-		key.setString("messages.successful-reforge", successMsg);
-		key.setString("messages.fail-reforge", failMsg);
-		key.setString("messages.insufficient-funds", insufficientFundsMsg);
-		key.setString("messages.cooldown-not-expired", cooldownUnexpiredMsg);
-		key.setString("messages.item-changed-during-reforge", itemChangedMsg);
-		key.setInt("delays-in-seconds.minimum", minReforgeDelay);
-		key.setInt("delays-in-seconds.maximum", maxReforgeDelay);
-		key.setInt("delays-in-seconds.reforge-cooldown", reforgeCooldown);
-		key.setInt("percent-chance-to-fail-reforge", failChance);
-		key.setInt("percent-chance-for-extra-enchantment", extraEnchantmentChance);
-		key.setInt("maximum-enchantments", maxEnchantments);
-		key.setBoolean("drop-item", dropItem);
-	}
-	*/
 }

@@ -23,8 +23,6 @@ public class Settings {
 	                root.setRaw(setting.path, setting.get());
 	            else
 	                setting.set(root.getRaw(setting.path));
-
-	        //save();
 	    }
 
 	    public YamlStorage getConfig() {
@@ -36,6 +34,7 @@ public enum Setting {
         PRICE_PER_DAY("values.perday", 8),
         PIG_BASE_PRICE("values.pig", 50),
         NOBLE_COOLDOWN("values.cooldown", 4),
+        MOB_LOCK("values.moblock", true),
         
         COST_MESSAGE("text.cost", "§eIt's §a<BASE_PRICE>§e up front, and §a<PRICE_PER_DAY>§e per additional day to stable here. Sound good?"),
         FUNDS_MESSAGE("text.funds", "§cYou can't afford it!"),

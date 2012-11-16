@@ -13,6 +13,9 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,6 +39,7 @@ public class StablemasterPlugin extends JavaPlugin {
 			SLAPI.save(StablemasterTrait.hasStabled, getDataFolder() + File.separator + "stabled.bin");
 			SLAPI.save(StablemasterTrait.nobleCooldown, getDataFolder() + File.separator + "cooldown.bin");
 			SLAPI.save(StablemasterTrait.hasDebt, getDataFolder() + File.separator + "debt.bin");
+			SLAPI.save(MountListener.leftMounted, getDataFolder() + File.separator + "mounted.bin");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -46,19 +50,20 @@ public class StablemasterPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig();
+		plugin = this;
 		Settings config = new Settings(this);
 		config.load();
-		
-		getServer().getPluginManager().registerEvents(new MountListener(null),this); 
 		
 		File s = new File(getDataFolder() + File.separator + "stabled.bin");
 		File c = new File(getDataFolder() + File.separator + "cooldown.bin");
 		File d = new File(getDataFolder() + File.separator + "debt.bin");
-		if (s.exists() && c.exists() && d.exists()){
+		File m = new File(getDataFolder() + File.separator + "mounted.bin");
+		if (s.exists() && c.exists() && d.exists() && m.exists()){
 			try{
 				StablemasterTrait.hasStabled = SLAPI.load(getDataFolder() + File.separator + "stabled.bin");
 				StablemasterTrait.nobleCooldown = SLAPI.load(getDataFolder() + File.separator + "cooldown.bin");
 				StablemasterTrait.hasDebt = SLAPI.load(getDataFolder() + File.separator + "debt.bin");
+				MountListener.leftMounted = SLAPI.load(getDataFolder() + File.separator + "mounted.bin");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -67,23 +72,26 @@ public class StablemasterPlugin extends JavaPlugin {
 			s.createNewFile();
 			c.createNewFile();
 			d.createNewFile();
+			m.createNewFile();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		getServer().getPluginManager().registerEvents(new MountListener(null),
-				this);
 
+		getServer().getPluginManager().registerEvents(new MountListener(null),this);
+		
 		// Check for Cititrader
 		if (getServer().getPluginManager().getPlugin("CitiTrader") != null) {
 			hasCititrader = true;
 		}
+		
 		// Setup Vault
 		RegisteredServiceProvider<Economy> economyProvider = getServer()
 				.getServicesManager().getRegistration(Economy.class);
 		if (economyProvider != null)
 			economy = economyProvider.getProvider();
 		else {
+			
 			// Disable if no economy plug-in was found
 			getServer().getLogger().log(Level.SEVERE,
 					"Failed to load an economy plugin. Disabling...");
@@ -91,6 +99,7 @@ public class StablemasterPlugin extends JavaPlugin {
 			return;
 		}
 
+		//	Register the trait!
 		CitizensAPI.getTraitFactory().registerTrait(
 				net.citizensnpcs.api.trait.TraitInfo.create(
 						StablemasterTrait.class).withName("stablemaster"));
@@ -143,5 +152,16 @@ public class StablemasterPlugin extends JavaPlugin {
 			ois.close();
 			return result;
 		}
+	}
+	
+	//	Mount player on their pig after relog
+	public static void delay(final Player player, final Entity piggie) {
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+					public void run() {
+						((Pig) piggie).setSaddle(true);
+						piggie.setPassenger(player);
+					}
+				}, 2L);
 	}
 }
