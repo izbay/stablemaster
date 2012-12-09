@@ -1,36 +1,29 @@
-# Stablemaster Configuration
-
-values:
- # Upfront cost to stable your pig.
- base: 8
- # Charge per day (24 hours) to leave your pig stabled. First 24 hours paid in base cost.
- perday: 8
- # Cost to purchase a saddled pig from the Stablemaster.
- pig: 50
- # Cooldown for free pigs, in hours.
- cooldown: 4
- # Lock mobs to players on logout?
- moblock: true
+﻿values:
+  base: 8
+  perday: 8
+  pig: 50
+  cooldown: 4
+  moblock: true
 
 # Default messages.
 text:
- cost: "§eIt's §a<BASE_PRICE>§e up front, and §a<PRICE_PER_DAY>§e per additional day to stable here. Sound good?" 
- funds: "§cYou can't afford it!" 
- invalid: "§cYou look lost. You have nothing I can look after!"
- already: "§cI'm already watching one of yours!"
- sale: "§eIf you're looking to buy, I've got mounts for §a<MOUNT_PRICE>§e."
- give: "§eGreat! Here she is!"
- short: "§eYou've come up short. Take the pig, and I'll collect the rest next time."
- debt: "§eI still need you to pay up from last time. It was §a<DEBT>§e." 
- paid: "§eThanks! Now what can I do for you?"
- stow: "§eDon't you worry! I'll take fine care of her!"
- take: "§eShe's been very well behaved. Were you ready to check out?"
- take2: "§eIt comes to §a<TOTAL_PRICE>§e, for <DAYS> days."
+    cost: "&eIt's &a<BASE_PRICE>&e up front, and &a<PRICE_PER_DAY>&e per additional day to stable here. Sound good?" 
+    funds: "&cYou can't afford it!" 
+    invalid: "&cYou look lost. You have nothing I can look after!"
+    already: "&cI'm already watching one of yours!"
+    sale: "&eIf you're looking to buy, I've got mounts for &a<MOUNT_PRICE>&e."
+    give: "&eGreat! Here she is!"
+    short: "&eYou've come up short. Take the pig, and I'll collect the rest next time."
+    debt: "&eI still need you to pay up from last time. It was &a<DEBT>&e." 
+    paid: "&eThanks! Now what can I do for you?"
+    stow: "&eDon't you worry! I'll take fine care of her!"
+    take: "&eShe's been very well behaved. Were you ready to check out?"
+    take2: "&eIt comes to &a<TOTAL_PRICE>&e, for <DAYS> days."
 
 # Noble messages (Admins or Donators).
 noble: 
- offer: "§eWould you like me to watch your Boar?"
- stow: "§eExcellent! I'll care for him as if he were my own."
- free: "§eYour grace! Please take my finest Boar. It is an honor!"
- take: "§eHere he is, your grace. Bathed, brushed, and pampered!"
- deny: "§eAnother one? I can't afford that. It'd be §a<MOUNT_PRICE>§e."
+    offer: "&eWould you like me to watch your Boar?"
+    stow: "&eExcellent! I'll care for him as if he were my own."
+    free: "&eYour grace! Please take my finest Boar. It is an honor!"
+    take: "&eHere he is, your grace. Bathed, brushed, and pampered!"
+    deny: "&eAnother one? I can't afford that. It'd be &a<MOUNT_PRICE>&e."

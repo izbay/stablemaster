@@ -148,11 +148,28 @@ public class StablemasterTrait extends Trait implements Listener {
 	}
 
 	//	How many days (86,400 seconds)?
-	private int daysStabled(Player player) {
+	public int daysStabled(Player player) {
 		return (int) ((System.currentTimeMillis() - hasStabled.get(player
 				.toString())) / (86400 * 1000));
 	}
 
+	//	Message Handler
+	public void msg(Player player, String input, int value){
+		input = input.replace("<BASE_PRICE>", plugin.econFormat(basePrice));
+		input = input.replace("<PRICE_PER_DAY>", plugin.econFormat(pricePerDay));
+		input = input.replace("<MOUNT_PRICE>", plugin.econFormat(pigBasePrice));
+		input = input.replace("<DEBT>", "" + value);
+		input = input.replace("<TOTAL_PRICE>", plugin.econFormat(pricePerDay * value));
+		input = input.replace("<DAYS>", "" + value);
+		input = input.replace("<PLAYER>", player.toString());
+		
+		input = input.replace("&a", "§a");
+		input = input.replace("&c", "§c");
+		input = input.replace("&e", "§e");
+		player.sendMessage(input);
+		
+	}
+	
 	@EventHandler
 	public void onRightClick(net.citizensnpcs.api.event.NPCRightClickEvent event) {
 		if (this.npc != event.getNPC())
@@ -168,11 +185,10 @@ public class StablemasterTrait extends Trait implements Listener {
 					player.sendMessage(paidMsg);
 					hasDebt.remove(player.toString());
 				} else {
-					player.sendMessage(insufficientFundsMsg);
+					msg(player, insufficientFundsMsg, 0);
 				}
 			} else {
-				player.sendMessage(debtMsg.replace("<DEBT>",
-						plugin.econFormat(hasDebt.get(player.toString()))));
+				msg(player, debtMsg, hasDebt.get(player.toString()));
 			}
 		}
 		
@@ -183,7 +199,7 @@ public class StablemasterTrait extends Trait implements Listener {
 			// Nobles
 			if (player.hasPermission("stablemaster.noble")) {
 				if (hasStabled.get(player.toString()) != null) {
-					player.sendMessage(nobleTakeMsg);
+					msg(player, nobleTakeMsg, 0);
 					hasStabled.remove(player.toString());
 					getPig(player);
 				} else {
@@ -191,7 +207,7 @@ public class StablemasterTrait extends Trait implements Listener {
 							|| (System.currentTimeMillis() >= nobleCooldown
 									.get(player.toString())
 									+ (3600 * 1000 * nobleCooldownLen))) {
-						player.sendMessage(nobleFreeMsg);
+						msg(player, nobleFreeMsg, 0);
 						nobleCooldown.put(player.toString(),
 								System.currentTimeMillis());
 						getPig(player);
@@ -199,16 +215,14 @@ public class StablemasterTrait extends Trait implements Listener {
 						if (chatCheck(player)) {
 							if (plugin.canAfford(player, pigBasePrice)) {
 								plugin.charge(npc, player, pigBasePrice);
-								player.sendMessage(nobleTakeMsg.replace(
-										"<MOUNT_PRICE>",
-										plugin.econFormat(pigBasePrice)));
-								hasStabled.remove(player.toString());
+								msg(player, nobleTakeMsg, 0);	
+								hasStabled.remove(player.toString());								
 								getPig(player);
 							} else
-								player.sendMessage(insufficientFundsMsg);
+								msg(player, insufficientFundsMsg, 0);
 
 						} else
-							player.sendMessage(nobleDenyMsg);
+							msg(player, nobleDenyMsg, 0);
 					}
 				}
 
@@ -220,11 +234,11 @@ public class StablemasterTrait extends Trait implements Listener {
 								* daysStabled(player))) {
 							plugin.charge(npc, player, pricePerDay
 									* daysStabled(player));
-							player.sendMessage(giveMsg);
+							msg(player, giveMsg, 0);
 						} else {
 							plugin.charge(npc, player, (int) plugin.economy
 									.getBalance(player.getName()));
-							player.sendMessage(shortMsg);
+							msg(player, shortMsg, 0);
 							hasDebt.put(
 									player.toString(),
 									(int) ((pricePerDay * daysStabled(player)) - plugin.economy
@@ -233,13 +247,9 @@ public class StablemasterTrait extends Trait implements Listener {
 						hasStabled.remove(player.toString());
 						getPig(player);
 					} else {
-						player.sendMessage(takeMsg);
+						msg(player, takeMsg, 0);
 						if ((pricePerDay * daysStabled(player)) > 0)
-							player.sendMessage(take2Msg.replace(
-									"<TOTAL_PRICE>",
-									plugin.econFormat(pricePerDay
-											* daysStabled(player))).replace(
-									"<DAYS>", "" + daysStabled(player)));
+							msg(player, take2Msg, daysStabled(player));
 					}
 
 				// Looks like you're buying one!
@@ -247,21 +257,20 @@ public class StablemasterTrait extends Trait implements Listener {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, pigBasePrice)) {
 							plugin.charge(npc, player, pigBasePrice);
-							player.sendMessage(giveMsg);
+							msg(player, giveMsg, 0);
 							getPig(player);
 						} else
-							player.sendMessage(insufficientFundsMsg);
+							msg(player, insufficientFundsMsg, 0);
 
 					} else
-						player.sendMessage(saleMsg.replace("<MOUNT_PRICE>",
-								plugin.econFormat(pigBasePrice)));
+						msg(player, saleMsg, 0);
 				}
 			}
 
 		// Invalid or No Permission = No Service!
 		} else if (!(player.getVehicle() instanceof Pig)
 				|| !player.hasPermission("stablemaster.stable")) {
-			player.sendMessage(invalidMountMsg);
+			msg(player, invalidMountMsg, 0);
 			return;
 
 		// Drop off.
@@ -271,34 +280,31 @@ public class StablemasterTrait extends Trait implements Listener {
 				// Nobles
 				if (player.hasPermission("stablemaster.noble")) {
 					if (chatCheck(player)) {
-						player.sendMessage(nobleStowMsg);
+						msg(player, nobleStowMsg, 0);
 						hasStabled.put(player.toString(),
 								System.currentTimeMillis());
 						player.getVehicle().remove();
 					} else
-						player.sendMessage(nobleOfferMsg);
+						msg(player, nobleOfferMsg, 0);
 
 				// Others
 				} else {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, basePrice)) {
 							plugin.charge(npc, player, basePrice);
-							player.sendMessage(stowMsg);
+							msg(player, stowMsg, 0);
 							hasStabled.put(player.toString(),
 									System.currentTimeMillis());
 							player.getVehicle().remove();
 						} else
-							player.sendMessage(insufficientFundsMsg);
+							msg(player, insufficientFundsMsg, 0);
 					} else
-						player.sendMessage(costMsg.replace("<BASE_PRICE>",
-								plugin.econFormat(basePrice)).replace(
-								"<PRICE_PER_DAY>",
-								plugin.econFormat(pricePerDay)));
+						msg(player, costMsg, 0);
 				}
 
 			// Already has your pig!
 			} else {
-				player.sendMessage(alreadyMountMsg);
+				msg(player, alreadyMountMsg, 0);
 			}
 		}
 	}
