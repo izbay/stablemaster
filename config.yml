@@ -1,8 +1,13 @@
 ﻿values:
+  # Upfront cost to stable your pig.
   base: 8
+  # Charge per day (24 hours) to leave your pig stabled. First 24 hours paid in base cost.
   perday: 8
+  # Cost to purchase a saddled pig from the Stablemaster.
   pig: 50
+  # Cooldown for free pigs, in hours.
   cooldown: 4
+  # Lock mobs to players on logout?
   moblock: true
 
 # Default messages.

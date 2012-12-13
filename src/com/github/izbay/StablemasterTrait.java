@@ -26,10 +26,8 @@ public class StablemasterTrait extends Trait implements Listener {
 	static Map<String, Long> nobleCooldown = new HashMap<String, Long>();
 	static Map<String, Integer> hasDebt = new HashMap<String, Integer>();
 	private final Map<String, Boolean> mountWatcher = new HashMap<String, Boolean>();
-	
-	
-	
-// Defaults
+
+	// Defaults
 	public String costMsg = Setting.COST_MESSAGE.asString();
 	public String insufficientFundsMsg = Setting.FUNDS_MESSAGE.asString();
 	public String invalidMountMsg = Setting.INVALID_MESSAGE.asString();
@@ -55,16 +53,12 @@ public class StablemasterTrait extends Trait implements Listener {
 	public Double nobleCooldownLen = Setting.NOBLE_COOLDOWN.asDouble();
 	public static Boolean mobLock = Setting.MOB_LOCK.asBoolean();
 
-	
-	
 	public StablemasterTrait() {
 		super("stablemaster");
 		plugin = (StablemasterPlugin) Bukkit.getServer().getPluginManager()
 				.getPlugin("Stablemaster");
 	}
-	
-	
-	
+
 	@Override
 	public void load(DataKey key) {
 		// Override defaults if they exist
@@ -78,7 +72,7 @@ public class StablemasterTrait extends Trait implements Listener {
 			nobleCooldownLen = key.getDouble("values.cooldown");
 		if (key.keyExists("values.moblock"))
 			mobLock = key.getBoolean("values.moblock");
-		
+
 		if (key.keyExists("text.cost"))
 			costMsg = key.getString("text.cost");
 		if (key.keyExists("text.funds"))
@@ -114,7 +108,7 @@ public class StablemasterTrait extends Trait implements Listener {
 		if (key.keyExists("noble.deny"))
 			nobleDenyMsg = key.getString("noble.deny");
 	}
-	
+
 	private void getPig(Player player) {
 
 		// Get the midpoint.
@@ -128,7 +122,7 @@ public class StablemasterTrait extends Trait implements Listener {
 		((Pig) piggie).setSaddle(true);
 	}
 
-	//	Move on to second action from NPC iff player remains mounted/dismounted.
+	// Move on to second action from NPC iff player remains mounted/dismounted.
 	private boolean chatCheck(Player player) {
 		if (isChatting.get(player.toString()) == null
 				|| System.currentTimeMillis() >= isChatting.get(player
@@ -137,39 +131,50 @@ public class StablemasterTrait extends Trait implements Listener {
 			mountWatcher.put(player.toString(), player.isInsideVehicle());
 			return false;
 		} else {
-			if ((mountWatcher.get(player.toString()) && player.isInsideVehicle()) || (!mountWatcher.get(player.toString()) && !player.isInsideVehicle())){
+			if ((mountWatcher.get(player.toString()) && player
+					.isInsideVehicle())
+					|| (!mountWatcher.get(player.toString()) && !player
+							.isInsideVehicle())) {
 				isChatting.remove(player.toString());
 				mountWatcher.remove(player.toString());
 				return true;
 			} else
 				mountWatcher.put(player.toString(), player.isInsideVehicle());
-				return false;
+			return false;
 		}
 	}
 
-	//	How many days (86,400 seconds)?
+	// How many days (86,400 seconds)?
 	public int daysStabled(Player player) {
 		return (int) ((System.currentTimeMillis() - hasStabled.get(player
 				.toString())) / (86400 * 1000));
 	}
 
-	//	Message Handler
-	public void msg(Player player, String input, int value){
+	// Message Handler
+	public void msg(Player player, String input, int value) {
 		input = input.replace("<BASE_PRICE>", plugin.econFormat(basePrice));
-		input = input.replace("<PRICE_PER_DAY>", plugin.econFormat(pricePerDay));
+		input = input
+				.replace("<PRICE_PER_DAY>", plugin.econFormat(pricePerDay));
 		input = input.replace("<MOUNT_PRICE>", plugin.econFormat(pigBasePrice));
-		input = input.replace("<DEBT>", "" + value);
-		input = input.replace("<TOTAL_PRICE>", plugin.econFormat(pricePerDay * value));
+		input = input.replace("<DEBT>", "" + plugin.econFormat(value));
+		input = input.replace("<TOTAL_PRICE>",
+				plugin.econFormat(pricePerDay * value));
 		input = input.replace("<DAYS>", "" + value);
 		input = input.replace("<PLAYER>", player.toString());
+
+		// Color Codes
+		for(int i = 0; i<24; i++){
+			String temp = ""+i;
+			if (i > 9){
+				temp = "" + (char)(87 + i);
+			}
+			input = input.replace("&"+temp, "§"+temp);
+		}
 		
-		input = input.replace("&a", "§a");
-		input = input.replace("&c", "§c");
-		input = input.replace("&e", "§e");
 		player.sendMessage(input);
-		
+
 	}
-	
+
 	@EventHandler
 	public void onRightClick(net.citizensnpcs.api.event.NPCRightClickEvent event) {
 		if (this.npc != event.getNPC())
@@ -182,7 +187,7 @@ public class StablemasterTrait extends Trait implements Listener {
 			if (chatCheck(player)) {
 				if (plugin.canAfford(player, hasDebt.get(player.toString()))) {
 					plugin.charge(npc, player, hasDebt.get(player.toString()));
-					player.sendMessage(paidMsg);
+					msg(player, paidMsg, 0);
 					hasDebt.remove(player.toString());
 				} else {
 					msg(player, insufficientFundsMsg, 0);
@@ -191,7 +196,7 @@ public class StablemasterTrait extends Trait implements Listener {
 				msg(player, debtMsg, hasDebt.get(player.toString()));
 			}
 		}
-		
+
 		// On foot: Pickup or Buy
 		else if (player.getVehicle() == null
 				&& player.hasPermission("stablemaster.stable")) {
@@ -215,8 +220,8 @@ public class StablemasterTrait extends Trait implements Listener {
 						if (chatCheck(player)) {
 							if (plugin.canAfford(player, pigBasePrice)) {
 								plugin.charge(npc, player, pigBasePrice);
-								msg(player, nobleTakeMsg, 0);	
-								hasStabled.remove(player.toString());								
+								msg(player, nobleTakeMsg, 0);
+								hasStabled.remove(player.toString());
 								getPig(player);
 							} else
 								msg(player, insufficientFundsMsg, 0);
@@ -226,7 +231,7 @@ public class StablemasterTrait extends Trait implements Listener {
 					}
 				}
 
-			// Others
+				// Others
 			} else {
 				if (hasStabled.get(player.toString()) != null) {
 					if (chatCheck(player)) {
@@ -236,13 +241,13 @@ public class StablemasterTrait extends Trait implements Listener {
 									* daysStabled(player));
 							msg(player, giveMsg, 0);
 						} else {
-							plugin.charge(npc, player, (int) plugin.economy
-									.getBalance(player.getName()));
-							msg(player, shortMsg, 0);
 							hasDebt.put(
 									player.toString(),
 									(int) ((pricePerDay * daysStabled(player)) - plugin.economy
 											.getBalance(player.getName())));
+							plugin.charge(npc, player, (int) plugin.economy
+									.getBalance(player.getName()));
+							msg(player, shortMsg, 0);
 						}
 						hasStabled.remove(player.toString());
 						getPig(player);
@@ -252,7 +257,7 @@ public class StablemasterTrait extends Trait implements Listener {
 							msg(player, take2Msg, daysStabled(player));
 					}
 
-				// Looks like you're buying one!
+					// Looks like you're buying one!
 				} else {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, pigBasePrice)) {
@@ -267,13 +272,13 @@ public class StablemasterTrait extends Trait implements Listener {
 				}
 			}
 
-		// Invalid or No Permission = No Service!
+			// Invalid or No Permission = No Service!
 		} else if (!(player.getVehicle() instanceof Pig)
 				|| !player.hasPermission("stablemaster.stable")) {
 			msg(player, invalidMountMsg, 0);
 			return;
 
-		// Drop off.
+			// Drop off.
 		} else {
 			if (hasStabled.get(player.toString()) == null) {
 
@@ -287,7 +292,7 @@ public class StablemasterTrait extends Trait implements Listener {
 					} else
 						msg(player, nobleOfferMsg, 0);
 
-				// Others
+					// Others
 				} else {
 					if (chatCheck(player)) {
 						if (plugin.canAfford(player, basePrice)) {
@@ -302,7 +307,7 @@ public class StablemasterTrait extends Trait implements Listener {
 						msg(player, costMsg, 0);
 				}
 
-			// Already has your pig!
+				// Already has your pig!
 			} else {
 				msg(player, alreadyMountMsg, 0);
 			}
