@@ -1,5 +1,5 @@
 name: Stablemaster
-author: izbay (heavily influenced by aPunch's blacksmith)
-version: 1.0
+author: izbay
+version: 1.09
 main: com.github.izbay.StablemasterPlugin
 depend: [Citizens, Vault]
