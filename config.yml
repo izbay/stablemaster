@@ -1,7 +1,8 @@
 # <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_TYPE> <MOUNT_PAMPERED>
 
   auto-save: 60 #interval for auto-saving in minutes.
-
+  check-update: true #automatically checks for updates. Set to false to disable.
+   
   mount-cost: #setting of -1 disables sale. 0 enables free give-away.
     pig: 50
     horse: -1

@@ -30,6 +30,7 @@ public class CheckUpdate implements Runnable {
 		URLConnection yc;
 		Scanner in = null;
 		
+		logger.log(Level.INFO, "Checking for Stablemaster updates...");
 		// Attempt to connect to the BukkitDev site.
 		try {
 			url = new URL("http://dev.bukkit.org/server-mods/stablemaster/files/");
@@ -66,6 +67,8 @@ public class CheckUpdate implements Runnable {
 			logger.log(Level.SEVERE, "GET THE LATEST BUILD, " + currVersion + ", ON BUKKITDEV!");
 			logger.log(Level.SEVERE, "bit.ly/stablemaster");
 			logger.log(Level.SEVERE, "*****************************************");
+		} else {
+			logger.log(Level.INFO, "This version is up to date. Good job!");
 		}
 	}
 }

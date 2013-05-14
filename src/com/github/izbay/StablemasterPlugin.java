@@ -43,12 +43,16 @@ public class StablemasterPlugin extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {				
-		// Check the latest version on BukkitDEV and alert if user is out of date.
-		new Thread(new CheckUpdate(this)).start();
-		
+				
 		// Load config
 		this.saveDefaultConfig();
 		config = this.getConfig();
+		
+		// If configured to do so, check the latest version on BukkitDEV and alert if user is out of date.
+		if(config.getBoolean("check-update")){
+			new Thread(new CheckUpdate(this)).start();
+		}		
+		
 		File stable = new File(getDataFolder() + File.separator + "stable.bin");
 		
 		if(stable.exists()){
