@@ -8,8 +8,6 @@
     horse: -1
     donkey: -1
     mule: -1
-    cart: 30
-    boat: 20
   text:
     greet: "&eHello there! May I help you with anything?"
     nil: "&cI'm afraid I don't have anything of yours."
@@ -21,6 +19,7 @@
     debt: "&eI still need you to pay up from last time. It was &a<DEBT>&e."
     paid: "&eThanks! Now what can I do for you?"
     stow: "&eDon't you worry! I'll take fine care of <MOUNT_NAME>!"
+    pay: "&2[&fMoney&2] You have sent &f<AMOUNT> &2to &f<NPC_NAME>&2."
   noble:
     stow: "&eExcellent! I'll care for <MOUNT_NAME> as if it were my own."
     free: "&eYour grace! Please take my finest <MOUNT_TYPE>. It is an honor!"
@@ -43,15 +42,11 @@
   wharf:
     max-mounts: 64
     price-init: 2
-    price-per-day: 1
     location-log: true # place vehicle where it was taken from? else throw item down
-    cooldown: 4
     pampered: "I even scrubbed down the hull!"
     
   station:
     max-mounts: 64
     price-init: 2
-    price-per-day: 1
     location-log: true
-    cooldown: 4
     pampered: "Washed and waxed to a brand new shine!"

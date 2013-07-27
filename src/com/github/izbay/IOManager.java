@@ -1,12 +1,20 @@
 package com.github.izbay;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.izbay.StableMgr.Mount;
 import com.github.izbay.StableMgr.StableAcct;
@@ -32,7 +40,7 @@ public class IOManager {
 		ioManager = new IOManager();
 	}
 	
-	public static Map<EntityType, Integer> mountPrice = new HashMap<EntityType, Integer>();
+	//public static Map<EntityType, Integer> mountPrice = new HashMap<EntityType, Integer>();
 	private static Map<Action, String> messages = new HashMap<Action, String>();
 	private static Map<Action, String> nobleMsg = new HashMap<Action, String>();
 	private static String[] namesList;
@@ -40,10 +48,10 @@ public class IOManager {
 	// Enforce static class with private constructor
 	private IOManager(){
 		// Unpack the config.
-		mountPrice.put(EntityType.PIG, config.getInt("mount-cost.pig"));
-		//mountPrice.put(EntityType.HORSE, config.getInt("mount-cost.horse"));
-		mountPrice.put(EntityType.MINECART, config.getInt("mount-cost.cart"));
-		mountPrice.put(EntityType.BOAT, config.getInt("mount-cost.boat"));
+//		mountPrice.put(EntityType.PIG, config.getInt("mount-cost.pig"));
+//		mountPrice.put(EntityType.HORSE, config.getInt("mount-cost.horse"));
+//		mountPrice.put(EntityType.MINECART, config.getInt("mount-cost.cart"));
+//		mountPrice.put(EntityType.BOAT, config.getInt("mount-cost.boat"));
 
 		namesList = (config.getString("stable.random-names")).split(", ");
 		
@@ -63,6 +71,41 @@ public class IOManager {
 	public static String getSomeName(){
 		int selection = (int)Math.floor(Math.random() * namesList.length);		
 		return namesList[selection];
+	}
+	
+	/**
+	 * Creates a button for the GUI with a given Icon, title, and description.
+	 * @param icon The material to be used for this button's icon.
+	 * @param option The title of this button.
+	 * @param subtext Any description to appear below the title of this button.
+	 * @return Returns an ItemStack which can be used in the inventory as a button. Has option as the item name and subtext as the lore.
+	 */
+	public static ItemStack makeButton(Material icon, String option, String subtext){
+		ItemStack button = new ItemStack(icon, 1);
+		ItemMeta im = button.getItemMeta();
+		im.setDisplayName(option);
+		if (!subtext.equals(""))
+			im.setLore(Arrays.asList(subtext));
+		button.setItemMeta(im);
+		return button;
+	}
+	
+	/**
+	 * Creates a button for the GUI with a given Icon, title, and description.
+	 * @param icon The material to be used for this button's icon.
+	 * @ param amt How many of the items will be in the stack?
+	 * @param option The title of this button.
+	 * @param subtext Any description to appear below the title of this button.
+	 * @return Returns an ItemStack which can be used in the inventory as a button. Has option as the item name and subtext as the lore.
+	 */
+	public static ItemStack makeButton(Material icon, int amt, String option, String subtext){
+		ItemStack button = new ItemStack(icon, amt);
+		ItemMeta im = button.getItemMeta();
+		im.setDisplayName(option);
+		if (!subtext.equals(""))
+			im.setLore(Arrays.asList(subtext));
+		button.setItemMeta(im);
+		return button;
 	}
 	
 	public static double getCost(Player player, Mount mount){
@@ -124,6 +167,8 @@ public class IOManager {
 					npc.getTrait(WalletTrait.class).deposit(cost);
 				}
 			}
+			if(!messages.get(Action.pay).equals(""))
+				player.sendMessage(format(Action.pay, player, messages.get(Action.pay).replace("<AMOUNT>",economy.format(cost)).replace("<NPC_NAME>", npc.getName()), null));
 			return true;
 		} else {
 			msg(player, Action.funds, null);
@@ -143,14 +188,21 @@ public class IOManager {
 	}
 	
 	public static String getVehicleName(Player player){
-		String name = "<MOUNT_NAME>";
-		LivingEntity vehicle = (LivingEntity)player.getVehicle();
-		if (vehicle.getCustomName() != null){
-			name = vehicle.getCustomName();
-		} else {
-			name = vehicle.getClass().getSimpleName().replace("Craft", "");
+		Entity vehicle = player.getVehicle();
+		if(!(vehicle instanceof Boat) && !(vehicle instanceof Minecart) ){
+			LivingEntity lvehicle = (LivingEntity)vehicle;
+			if (lvehicle.getCustomName() != null){
+				return lvehicle.getCustomName();
+			}
 		}
-		return name;
+		if (vehicle.getType().equals(EntityType.HORSE)){
+			if (((Horse) vehicle).getVariant().equals(Horse.Variant.MULE)){
+				return "Mule";
+			}else if (((Horse) vehicle).getVariant().equals(Horse.Variant.DONKEY)){
+				return "Donkey";
+			}
+		}
+		return vehicle.getClass().getSimpleName().replace("Craft", "");
 	}
 	
 	private static String format(Action action, Player player, String input, Object arg) {		
@@ -161,17 +213,37 @@ public class IOManager {
 		if(action.equals(Action.stow)){
 			input = input.replace("<MOUNT_NAME>", getVehicleName(player));
 			input = input.replace("<MOUNT_TYPE>", player.getVehicle().getClass().getSimpleName().replace("Craft", ""));
-		} else if(arg instanceof Mount) {
-			input = input.replace("<MOUNT_NAME>", ((Mount) arg).getName());
-			input = input.replace("<MOUNT_TYPE>", ((Mount) arg).getType().toString().toLowerCase());
-			if (((Mount)arg).getType().isAlive()){
-				input = input.replace("<MOUNT_PAMPERED>", Traits.stable.getPampered());
-			} else if (((Mount)arg).getType().equals(EntityType.BOAT)){
+		}
+		if(arg instanceof Entity){
+			String name = "your " + arg.getClass().getSimpleName().replace("Craft", "").toLowerCase();
+			input = input.replace("<MOUNT_NAME>", name);
+			if (arg instanceof Boat){
 				input = input.replace("<MOUNT_PAMPERED>", Traits.wharf.getPampered());
+			} else if (arg instanceof Minecart){
+				input = input.replace("<MOUNT_PAMPERED>", Traits.station.getPampered());
 			} else {
+
+			}
+		}
+		if(arg instanceof Mount){
+			input = input.replace("<MOUNT_NAME>", ((Mount) arg).getName());
+			input = input.replace("<MOUNT_TYPE>", ((Mount) arg).getType().name().toLowerCase());
+			input = input.replace("<MOUNT_PAMPERED>", Traits.stable.getPampered());
+		}
+		
+		if(arg instanceof String){
+			if(arg.equals("boat")){
+				input = input.replace("<MOUNT_NAME>", "your boat");
+				input = input.replace("<MOUNT_PAMPERED>", Traits.wharf.getPampered());
+			} else if(arg.equals("cart")){
+				input = input.replace("<MOUNT_NAME>", "your minecart");
 				input = input.replace("<MOUNT_PAMPERED>", Traits.station.getPampered());
 			}
 		}
+		
+		input = input.replace("Pig", "the pig");
+		input = input.replace("Boat", "the boat");
+		input = input.replace("MinecartRideable", "the minecart");
 		
 		// Color Codes
 		for(int i = 0; i<24; i++){
@@ -187,9 +259,11 @@ public class IOManager {
 	
 	public static void msg(Player player, Action action, Object arg){
 		if (player.hasPermission("stablemaster.noble")){
-			player.sendMessage(format(action, player, nobleMsg.get(action), arg));
+			if(!nobleMsg.get(action).equals(""))
+				player.sendMessage(format(action, player, nobleMsg.get(action), arg));
 		} else {
-			player.sendMessage(format(action, player, messages.get(action), arg));
+			if(!messages.get(action).equals(""))
+				player.sendMessage(format(action, player, messages.get(action), arg));
 		}
 	}
 	
@@ -240,7 +314,11 @@ public class IOManager {
 		/**
 		 * Report that a free mount has been given to a Noble.
 		 */
-		free
+		free,
+		/**
+		 * Report that you have paid the NPC.
+		 */
+		pay
 	};
 	
 	public static enum Traits{

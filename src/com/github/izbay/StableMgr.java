@@ -3,8 +3,18 @@ package com.github.izbay;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Style;
+import org.bukkit.entity.Horse.Variant;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @author izbay
@@ -12,6 +22,23 @@ import org.bukkit.entity.EntityType;
  */
 public class StableMgr implements Serializable{
 	private static final long serialVersionUID = -9136169194046773791L;
+	public static Map<Integer, String> placeMap = new HashMap<Integer, String>();
+	
+	public static String serializeLoc(Location loc){
+		return loc.getWorld()+","+loc.getX()+","+loc.getY()+","+loc.getZ()+","+
+				loc.getPitch()+","+loc.getYaw();
+	}
+	
+	public static Location deserializeLoc(String loc){
+		String[] parts = loc.split(",",6);
+		World w = Bukkit.getWorld(parts[0]);
+		double x = Double.parseDouble(parts[1]);
+        double y = Double.parseDouble(parts[2]);
+        double z = Double.parseDouble(parts[3]);
+        float yaw = Float.parseFloat(parts[4]);
+        float pitch = Float.parseFloat(parts[5]);
+        return new Location(w,x,y,z,yaw,pitch);
+	}
 	
 	/**
 	 * @author izbay
@@ -23,6 +50,8 @@ public class StableMgr implements Serializable{
 		private double hasDebt = 0;
 		private long nobleCooldown = 0;
 		private ArrayList<Mount> mounts = new ArrayList<Mount>();
+		private int boats = 0;
+		private int carts = 0;
 		/**
 		 * Initializes a new account.
 		 */
@@ -41,7 +70,7 @@ public class StableMgr implements Serializable{
 			return hasDebt;
 		}
 		/**
-		 * @return The time (in milliseconds) the player last recieved a free mount.
+		 * @return The time (in milliseconds) the player last received a free mount.
 		 */
 		public long getCooldown(){
 			return nobleCooldown;
@@ -93,6 +122,18 @@ public class StableMgr implements Serializable{
 			return (mounts.size() < IOManager.Traits.stable.getMaxMounts());
 		}
 		/**
+		 * @return Returns true if the account has room for another boat (determined by the limit set in config).
+		 */
+		public boolean hasBoatRoom(){
+			return boats < IOManager.Traits.wharf.getMaxMounts();
+		}
+		/**
+		 * @return Returns true if the account has room for another cart (determined by the limit set in config).
+		 */
+		public boolean hasCartRoom(){
+			return carts < IOManager.Traits.station.getMaxMounts();
+		}
+		/**
 		 * @param sel The index of which mount to remove from the account.
 		 */
 		public void removeMount(int sel){
@@ -109,6 +150,30 @@ public class StableMgr implements Serializable{
 				}
 			}
 		}
+		/**
+		 * @param amt Sets the amount of boats in this account to this number.
+		 */
+		public void setBoats(int amt){
+			boats = amt;
+		}
+		/**
+		 * @param amt Sets the amount of carts in this account to this number.
+		 */
+		public void setCarts(int amt){
+			carts = amt;
+		}
+		/**
+		 * @return Number of boats this account has.
+		 */
+		public int getBoats(){
+			return boats;
+		}
+		/**
+		 * @return Number of carts this account has.
+		 */
+		public int getCarts(){
+			return carts;
+		}
 	}
 	/**
 	 * @author izbay
@@ -120,15 +185,57 @@ public class StableMgr implements Serializable{
 		private String name;
 		private EntityType type;
 		private Long time;
+		
+		// Used by Horses
+		private Variant variant;
+		private Color color;
+		private Style style;
+		private Boolean haschest;
+		private double health;
+		private double jumpstr;
+		private ItemSerializable armor;
+		private ItemSerializable[] inventory = new ItemSerializable[17];
+		
+		public Mount(){}
+		
 		/**
 		 * @param name The name of the new mount being created.
 		 * @param type The EntityType of the new mount.
 		 * @param time The time the mount is being delivered to a stablemaster.
-		 */
+		 */		
 		public Mount(String name, EntityType type, Long time){
 			this.name = name;
 			this.type = type;
 			this.time = time;
+		}
+		/**
+		 * @param name The name of the new mount being created.
+		 * @param type The EntityType of the new mount.
+		 * @param time The time the mount is being delivered to a stablemaster.
+		 * @param horse The horse object that this mount object represents.
+		 */
+		public Mount(String name, EntityType type, Long time, Horse horse){
+			this.name = name;
+			this.type = type;
+			this.time = time;
+			this.variant = horse.getVariant();
+			this.color = horse.getColor();
+			this.style = horse.getStyle();
+			this.haschest = horse.isCarryingChest();
+			this.health = horse.getMaxHealth();
+			this.jumpstr = horse.getJumpStrength();
+			if(horse.getInventory().getArmor() != null)
+				this.armor = new ItemSerializable(horse.getInventory().getArmor());
+			
+			if(this.haschest){
+				int i=0;
+				for (ItemStack e: horse.getInventory().getContents()){
+					if(e != null){
+						inventory[i] = new ItemSerializable(e);
+					}
+					i++;
+				}
+			}
 		}
 	
 		/**
@@ -143,30 +250,79 @@ public class StableMgr implements Serializable{
 				return 1;
 			return 0;
 		}
-		/**
-		 * @return Returns the name of this mount.
-		 */
+
+// GETTERS
 		public String getName(){
 			return name;
 		}
-		/**
-		 * @return Returns the EntityType of this mount.
-		 */
 		public EntityType getType(){
 			return type;
 		}
-		/**
-		 * @return Returns time this mount was dropped off.
-		 */
 		public Long getTime(){
 			return time;
 		}
-		/**
-		 * @return Sets a new time for this mount being dropped off.
-		 */
+		public Variant getVariant(){
+			return variant;
+		}
+		public Color getColor(){
+			return color;
+		}
+		public Style getStyle(){
+			return style;
+		}
+		public Boolean HasChest(){
+			return haschest;
+		}
+		public double getHealth(){
+			return health;
+		}
+		public double getJumpstr(){
+			return jumpstr;
+		}
+		public ItemStack getArmor(){
+			if (armor != null)
+				return armor.getItemStack();
+			return null;
+		}
+		public ItemStack[] getInventory(){
+			ItemStack[] inv = new ItemStack[17];
+			for(int i=0; i<inventory.length; i++){
+				if(inventory[i] != null)
+					inv[i] = inventory[i].getItemStack();
+			}
+			return inv;
+		}
+		
+// SETTERS
+		public void setName(String name){
+			this.name = name;
+		}
+		public void setType(EntityType type){
+			this.type = type;
+		}
 		public void setTime(long time){
 			this.time = time;
 		}
+		public void setVariant(Variant variant){
+			this.variant = variant;
+		}
+		public void setColor(Color color){
+			this.color = color;
+		}
+		public void setStyle(Style style){
+			this.style = style;
+		}
+		public void setChest(Boolean chest){
+			haschest = chest;
+		}
+		public void setHealth(double health){
+			this.health = health;
+		}
+		public void setJumpstr(double jumpstr){
+			this.jumpstr = jumpstr;
+		}
+		public void setArmor(ItemStack armor){
+			this.armor = new ItemSerializable(armor);
+		}
 	}
-		
 }

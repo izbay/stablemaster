@@ -58,6 +58,9 @@ public class StablemasterPlugin extends JavaPlugin {
 		if(stable.exists()){
 			try {
 				StablemasterTrait.StableMgr = SLAPI.load(getDataFolder() + File.separator + "stable.bin");
+				if(new File(getDataFolder() + File.separator + "placemap.bin").exists()){
+					StableMgr.placeMap = SLAPI.load(getDataFolder() + File.separator + "placemap.bin");
+				}
 				config = this.getConfig();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -83,8 +86,10 @@ public class StablemasterPlugin extends JavaPlugin {
 			return;
 		}
 
-		//	Register the trait!
+		//	Register the traits!
 		CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(StablemasterTrait.class).withName("stablemaster"));
+		CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(WharfmasterTrait.class).withName("wharfmaster"));
+		CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(StationmasterTrait.class).withName("stationmaster"));
 		
 		// Boot up the IOManager
 		IOManager.init(this);
@@ -105,6 +110,7 @@ public class StablemasterPlugin extends JavaPlugin {
 		getLogger().log(Level.INFO, "Saving player stables.");
 		try {
 			SLAPI.save(StablemasterTrait.StableMgr,getDataFolder() + File.separator + "stable.bin");
+			SLAPI.save(StableMgr.placeMap, getDataFolder() + File.separator + "placemap.bin");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
