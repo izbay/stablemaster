@@ -1,5 +1,5 @@
 name: Stablemaster
 author: izbay
-version: 1.09
+version: 1.11
 main: com.github.izbay.StablemasterPlugin
 depend: [Citizens, Vault]
