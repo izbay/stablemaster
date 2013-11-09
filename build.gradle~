@@ -1,0 +1,64 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+group = "com.Myekaansmine"
+version = "1.11"
+
+sourceCompatibility = 1.7
+
+repositories {
+	mavenLocal()
+    mavenCentral()
+	maven {
+		url "http://repo.bukkit.org/content/groups/public"
+	      }
+	maven {
+		url "http://ci.herocraftonline.com/plugin/repository/everything"
+			}
+	maven {
+	   url "http://files.krinsoft.net:8085/nexus/content/groups/public"
+	      }
+	maven {
+	   url "http://repo.greatmancode.com/content/groups/public"
+	      }
+	maven {
+	   url "http://omwah.sdf.org/maven/repo/snapshots"
+	      }
+	maven {
+      url "http://repo.onarandombox.com/content/groups/public"
+         }
+   maven {
+      url "http://repo.mcstats.org/content/repositories/snapshots"
+         }
+}
+
+dependencies {
+	compile 'org.bukkit:craftbukkit:1.6.4-R2.1-SNAPSHOT'
+	compile 'net.milkbowl:vault:1.2.27-SNAPSHOT'
+   compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir "$projectDir"
+			include 'plugin.yml'
+			include 'config.yml'
+		}
+	}
+}
+
+processResources  {
+	filter ReplaceTokens, tokens: [
+		version: project.version,
+	]
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.6'
+}
