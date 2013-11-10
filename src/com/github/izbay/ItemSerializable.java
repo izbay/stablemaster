@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
  
+
+
+
+import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
@@ -19,15 +23,16 @@ public class ItemSerializable implements Serializable {
  
  
 	private static final long serialVersionUID = 9218747208794761041L;
-	private int materialId;
+	private String materialname;
 	private byte data;
 	private short durability;
 	private int amount;
 	private Map<String, Object> meta;
  
+	@SuppressWarnings("deprecation")
 	public ItemSerializable( ItemStack i ) {
  
-		this.materialId = i.getTypeId();
+		this.materialname = i.getType().toString();
 		this.data	= i.getData().getData();
 		this.durability = i.getDurability();
 		this.amount = i.getAmount();
@@ -38,9 +43,10 @@ public class ItemSerializable implements Serializable {
  
 	}
  
+	@SuppressWarnings("deprecation")
 	public ItemStack getItemStack() {
- 
-		ItemStack i = new ItemStack( this.materialId );
+		Material m = Material.valueOf(this.materialname);
+		ItemStack i = new ItemStack(m);
 		i.setAmount( this.amount );
 		i.setDurability( this.durability );
 		i.setData( new MaterialData( this.data ) );

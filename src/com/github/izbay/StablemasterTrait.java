@@ -29,7 +29,7 @@ public class StablemasterTrait extends Trait implements Listener {
 		plugin = (StablemasterPlugin)Bukkit.getServer().getPluginManager().getPlugin("Stablemaster");
 	}
 	
-	public static Map<String, StableMgr.StableAcct> StableMgr = new HashMap<String, StableMgr.StableAcct>();
+	public static Map<String, StableMgr.StableAcct> stableMgr = StableMgr.stableMgr;
 	
 	// Tracks if you've talked to a stablemaster recently (to prevent spam).
 	public static Map<Player, NPC> talked = new HashMap<Player, NPC>();
@@ -43,9 +43,9 @@ public class StablemasterTrait extends Trait implements Listener {
 		if(!player.hasPermission("stablemaster.stable")){
 			IOManager.msg(player, Action.invalid, null);
 		} else {
-			if(!StableMgr.containsKey(player.getName())){
+			if(!stableMgr.containsKey(player.getName())){
 				StableAcct acct = sm.new StableAcct();
-				StableMgr.put(player.getName(), acct);
+				stableMgr.put(player.getName(), acct);
 			}
 			if(!talked.containsKey(player)){
 				talked.put(player, this.npc);
@@ -56,7 +56,7 @@ public class StablemasterTrait extends Trait implements Listener {
 				}, 300L);
 				IOManager.msg(player, Action.greet, null);
 			}
-			Menu.openRoot(player, StableMgr, plugin, event.getNPC());
+			Menu.openRoot(player, stableMgr, plugin, event.getNPC());
 		}
 	}
 }

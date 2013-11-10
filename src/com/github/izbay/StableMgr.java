@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.server.v1_6_R3.AttributeInstance;
@@ -28,7 +29,8 @@ import org.bukkit.inventory.ItemStack;
 public class StableMgr implements Serializable {
 	private static final long serialVersionUID = -9136169194046773791L;
 	public static Map<Integer, String> placeMap = new HashMap<Integer, String>();
-
+	public static Map<String, StableMgr.StableAcct> stableMgr = new HashMap<String, StableMgr.StableAcct>();
+	
 	public static String serializeLoc(Location loc) {
 		return loc.getWorld() + "," + loc.getX() + "," + loc.getY() + ","
 				+ loc.getZ() + "," + loc.getPitch() + "," + loc.getYaw();
@@ -115,6 +117,7 @@ public class StableMgr implements Serializable {
 		 */
 		public void addMount(String name, EntityType type, Long time) {
 			addMount(new Mount(name, type, time));
+			Collections.sort(mounts);
 		}
 
 		/**
@@ -222,9 +225,13 @@ public class StableMgr implements Serializable {
 		private double health;
 		private double jumpstr;
 		private double speed;
+		private Map<String, Object> Armor;
+		private List<Map<String, Object>> Inventory = new ArrayList<Map<String, Object>>();
+		
+		// Old format. Log this for updating.
 		private ItemSerializable armor;
-		private ItemSerializable[] inventory = new ItemSerializable[17];
-
+		private ItemSerializable[] inventory;
+		
 		public Mount() {
 		}
 
@@ -268,15 +275,11 @@ public class StableMgr implements Serializable {
 			this.speed = attributes.getValue();
 
 			if (horse.getInventory().getArmor() != null)
-				this.armor = new ItemSerializable(horse.getInventory()
-						.getArmor());
+				this.Armor = new ItemStack(horse.getInventory()
+						.getArmor()).serialize();
 			if (this.haschest) {
-				int i = 0;
 				for (ItemStack e : horse.getInventory().getContents()) {
-					if (e != null) {
-						inventory[i] = new ItemSerializable(e);
-					}
-					i++;
+					Inventory.add((e==null)?null:e.serialize());
 				}
 			}
 		}
@@ -336,16 +339,22 @@ public class StableMgr implements Serializable {
 		}
 
 		public ItemStack getArmor() {
-			if (armor != null)
-				return armor.getItemStack();
+			if (armor != null){
+				ItemStack ar = armor.getItemStack();
+				armor = null;
+				return ar;
+			}
+			if (Armor != null)
+				return ItemStack.deserialize(Armor);
 			return null;
 		}
 
 		public ItemStack[] getInventory() {
+			updateInv();
 			ItemStack[] inv = new ItemStack[17];
-			for (int i = 0; i < inventory.length; i++) {
-				if (inventory[i] != null)
-					inv[i] = inventory[i].getItemStack();
+			for (int i = 0; i < Inventory.size(); i++) {
+				if (Inventory.get(i) != null)
+					inv[i] = ItemStack.deserialize(Inventory.get(i));
 			}
 			return inv;
 		}
@@ -392,7 +401,7 @@ public class StableMgr implements Serializable {
 		}
 
 		public void setArmor(ItemStack armor) {
-			this.armor = new ItemSerializable(armor);
+			this.Armor = new ItemStack(armor).serialize();
 		}
 
 		public void setSpeed(double speed) {
@@ -400,7 +409,21 @@ public class StableMgr implements Serializable {
 		}
 
 		public void setSaddle(ItemStack saddle) {
-			this.inventory[0] = new ItemSerializable(saddle);
+			if(Inventory.size() == 0){
+				Inventory.add(saddle.serialize());
+			} else {
+				Inventory.set(0, saddle.serialize());
+			}
+		}
+		
+		private void updateInv(){
+			if(inventory != null){
+				for (int i = 0; i < inventory.length; i++){
+					ItemSerializable item = inventory[i];
+					Inventory.add((item==null)?null:item.getItemStack().serialize());
+				}
+				inventory = null;
+			}
 		}
 	}
 }

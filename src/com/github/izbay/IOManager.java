@@ -1,11 +1,13 @@
 package com.github.izbay;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -19,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.izbay.StableMgr.Mount;
 import com.github.izbay.StableMgr.StableAcct;
 import com.github.izbay.StablemasterPlugin;
+
 import me.tehbeard.cititrader.WalletTrait;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
@@ -31,49 +34,145 @@ public class IOManager {
 	private static Economy economy;
 	private static boolean hasCitiTrader;
 	private static FileConfiguration config;
-	public static HashMap<String, Double> mountPrice;
-	public static IOManager ioManager;
-
-	public static void init(StablemasterPlugin plugin) {
-		economy = plugin.economy;
-		hasCitiTrader = plugin.hasCitiTrader;
-		config = plugin.config;
-		ioManager = new IOManager();
-	}
-
+	private static YamlConfiguration lang = new YamlConfiguration();
+	private static String langsetting = "en";
+	private static String paid;
+	
 	// public static Map<EntityType, Integer> mountPrice = new
 	// HashMap<EntityType, Integer>();
 	private static Map<Action, String> messages = new HashMap<Action, String>();
 	private static Map<Action, String> nobleMsg = new HashMap<Action, String>();
+	private static Map<Icons, Material> icons = new HashMap<Icons, Material>();
+	private static Map<Interface, String> interfaceTitle = new HashMap<Interface, String>();
+	private static Map<Interface, String> interfaceText = new HashMap<Interface, String>();
+	private static Map<Interface, String> NinterfaceTitle = new HashMap<Interface, String>();
+	private static Map<Interface, String> NinterfaceText = new HashMap<Interface, String>();
+	
 	private static String[] namesList;
 
+	public static Map<String, Double> mountPrice = new HashMap<String, Double>();
+	public static Map<Colors, String> colorsMap = new HashMap<Colors, String>();
+	public static Map<MountNames, String> mountNames = new HashMap<MountNames, String>();
+	public static IOManager ioManager;
+	public static int minjump;
+	public static int maxjump;
+	public static int modjump;
+	public static int minspeed;
+	public static int maxspeed;
+	public static int modspeed;
+	
+	
+	public static void init(StablemasterPlugin plugin) throws Exception{
+		economy = plugin.economy;
+		hasCitiTrader = plugin.hasCitiTrader;
+		config = plugin.config;
+		ioManager = new IOManager();
+		
+		langsetting = config.getString("lang");
+		
+		try {
+			lang.load(new File(plugin.getDataFolder() + File.separator
+					+ "lang_"+langsetting+".yml"));
+		} catch (Exception e) {
+			plugin.saveResource("lang_en.yml", true);
+			plugin.saveResource("lang_fr.yml", true);
+			plugin.saveResource("lang_de.yml", true);
+			plugin.saveResource("lang_sv.yml", true);
+			lang.load(plugin.getDataFolder() + File.separator + "lang_en.yml");
+		}
+		
+		namesList = (lang.getString("stable.random-names")).split(", ");
+
+		for (Action e : Action.values()) {
+			messages.put(e, colorCodes(lang.getString("text." + e.toString())));
+			if (config.contains("noble." + e.toString())) {
+				nobleMsg.put(e, colorCodes(lang.getString("noble." + e.toString())));
+			} else {
+				nobleMsg.put(e, colorCodes(lang.getString("text." + e.toString())));
+			}
+		}
+		
+		for (Interface e: Interface.values()){
+			if (lang.contains("titles." + e.toString())){
+				interfaceTitle.put(e, colorCodes(lang.getString("titles." + e.toString())));
+			} else {
+				interfaceTitle.put(e, "");
+			}
+			
+			if (lang.contains("interface." + e.toString())){
+				interfaceText.put(e, colorCodes(lang.getString("interface." + e.toString())));
+			} else {
+				interfaceTitle.put(e, "");
+			}
+			
+			if (lang.contains("nobletitles." + e.toString())){
+				NinterfaceTitle.put(e, colorCodes(lang.getString("nobletitles." + e.toString())));
+			} else {
+				NinterfaceTitle.put(e, interfaceTitle.get(e));
+			}
+			
+			if (lang.contains("nobleinterface." + e.toString())){
+				NinterfaceText.put(e, colorCodes(lang.getString("nobleinterface." + e.toString())));
+			} else {
+				NinterfaceText.put(e,  interfaceText.get(e));
+			}
+		}
+		
+		for (MountNames e: MountNames.values()){
+			if(lang.contains("mounts." + e.toString())){
+				mountNames.put(e,  colorCodes(lang.getString("mounts." + e.toString())));
+			} else {
+				mountNames.put(e, e.toString()+" not found.");
+			}
+		}
+		
+		for (Colors e: Colors.values()){
+			if(lang.contains("colors." + e.toString())){
+				colorsMap.put(e, colorCodes(lang.getString("colors." + e.toString())));
+			} else {
+				colorsMap.put(e, e.toString()+" not found.");
+			}
+		}
+
+		paid = lang.getString("stable.paid");
+	}
+	
 	// Enforce static class with private constructor
 	private IOManager() {
 		// Unpack the config.
-		mountPrice = new HashMap<String, Double>();
-		mountPrice.put("pig", config.getDouble("mount-cost.pig"));
-		mountPrice.put("horse", config.getDouble("mount-cost.horse"));
-		mountPrice.put("donkey", config.getDouble("mount-cost.horse"));
-		mountPrice.put("mule", config.getDouble("mount-cost.horse"));
-		mountPrice.put("boat", config.getDouble("mount-cost.boat"));
-		mountPrice.put("cart", config.getDouble("mount-cost.cart"));
-		mountPrice.put("health", config.getDouble("mount-cost.health"));
-		mountPrice.put("speed", config.getDouble("mount-cost.speed"));
-		mountPrice.put("jump", config.getDouble("mount-cost.jump"));
-		mountPrice.put("noble", config.getDouble("mount-cost.noble"));
-
-		namesList = (config.getString("stable.random-names")).split(", ");
-
-		for (Action e : Action.values()) {
-			messages.put(e, config.getString("text." + e.toString()));
-			if (config.contains("noble." + e.toString())) {
-				nobleMsg.put(e, config.getString("noble." + e.toString()));
+		for (Costs e: Costs.values()){
+			if(config.contains("mount-cost." + e.toString())){
+				mountPrice.put(e.toString(), config.getDouble("mount-cost." + e.toString()));
 			} else {
-				nobleMsg.put(e, config.getString("text." + e.toString()));
+				mountPrice.put(e.toString(), (double) -1);
 			}
 		}
+		
+		for (Icons e: Icons.values()){
+			if(config.contains("icons." + e.toString())){
+				icons.put(e, Material.valueOf(config.getString("icons." + e.toString())));
+			} else {
+				icons.put(e, Material.AIR);
+			}
+			
+		}
+		
+		minspeed = config.getInt("stable.min-speed");
+		maxspeed = config.getInt("stable.max-speed");
+		modspeed = config.getInt("stable.mod-speed");
+		minjump = config.getInt("stable.min-jump");
+		maxjump = config.getInt("stable.max-jump");
+		modjump = config.getInt("stable.mod-jump");
 	}
-
+	
+	public static String getString(Interface inter, boolean noble){
+		if(noble){
+			return NinterfaceTitle.get(inter);
+		} else {
+			return interfaceTitle.get(inter);
+		}
+	}
+	
 	/**
 	 * @return A random name selected from the configuration file.
 	 */
@@ -94,16 +193,9 @@ public class IOManager {
 	 * @return Returns an ItemStack which can be used in the inventory as a
 	 *         button. Has option as the item name and subtext as the lore.
 	 */
-	public static ItemStack makeButton(Material icon, String option,
+	public static ItemStack makeButton(Icons icon, String option,
 			String subtext) {
-		ItemStack button = new ItemStack(icon, 1);
-		ItemMeta im = button.getItemMeta();
-		if (!option.equals(""))
-			im.setDisplayName(option);
-		if (!subtext.equals(""))
-			im.setLore(Arrays.asList(subtext));
-		button.setItemMeta(im);
-		return button;
+		return makeButton(icon, 1, option, subtext);
 	}
 
 	/**
@@ -119,14 +211,61 @@ public class IOManager {
 	 * @return Returns an ItemStack which can be used in the inventory as a
 	 *         button. Has option as the item name and subtext as the lore.
 	 */
-	public static ItemStack makeButton(Material icon, int amt, String option,
+	public static ItemStack makeButton(Icons icon, int amt, String option,
 			String subtext) {
-		ItemStack button = new ItemStack(icon, amt);
+		ItemStack button = new ItemStack(icons.get(icon), amt);
 		ItemMeta im = button.getItemMeta();
 		if (!option.equals(""))
 			im.setDisplayName(option);
 		if (!subtext.equals(""))
 			im.setLore(Arrays.asList(subtext));
+		button.setItemMeta(im);
+		return button;
+	}
+	
+	public static ItemStack makeButton(Icons icon, Interface inter, boolean noble) {
+		return makeButton(icon, 1, inter, noble);
+	}
+	
+	public static ItemStack makeButton(Icons icon, int amt, Interface inter, boolean noble) {
+		ItemStack button = new ItemStack(icons.get(icon), amt);
+		ItemMeta im = button.getItemMeta();
+		String option, subtext;
+		if (noble){
+			option = NinterfaceTitle.get(inter);
+			subtext = NinterfaceText.get(inter);
+		} else {
+			option = interfaceTitle.get(inter);
+			subtext = interfaceText.get(inter);
+		}
+		im.setDisplayName(option);
+		if(subtext != null){
+			im.setLore(Arrays.asList(subtext));
+		}
+		button.setItemMeta(im);
+		return button;
+	}
+	
+	public static ItemStack makeButton(Icons icon, Interface inter, boolean noble, String price) {
+		return makeButton(icon, 1, inter, noble, price);
+	}
+	
+	public static ItemStack makeButton(Icons icon, int amt, Interface inter, boolean noble, String price) {
+		ItemStack button = new ItemStack(icons.get(icon), amt);
+		ItemMeta im = button.getItemMeta();
+		String option, subtext;
+		if (noble){
+			option = NinterfaceTitle.get(inter).replace("<PRICE>", price);
+			subtext = NinterfaceText.get(inter);
+		} else {
+			option = interfaceTitle.get(inter).replace("<PRICE>", price);
+			subtext = interfaceText.get(inter);
+		}
+		im.setDisplayName(option);
+		if(subtext != null){
+			subtext.replace("<PRICE>", price);
+			im.setLore(Arrays.asList(subtext));
+		}
 		button.setItemMeta(im);
 		return button;
 	}
@@ -152,7 +291,7 @@ public class IOManager {
 
 	public static String econFormat(Player player, double cost) {
 		if (cost == 0)
-			return "§2Paid in Full";
+			return "§2" + paid;
 		if (player == null)
 			return "§9" + economy.format(cost);
 		if (canAfford(player, cost))
@@ -288,6 +427,10 @@ public class IOManager {
 		input = input.replace("Boat", "the boat");
 		input = input.replace("MinecartRideable", "the minecart");
 
+		return colorCodes(input);
+	}
+	
+	private static String colorCodes(String input){
 		// Color Codes
 		for (int i = 0; i < 24; i++) {
 			String temp = "" + i;
@@ -296,7 +439,6 @@ public class IOManager {
 			}
 			input = input.replace("&" + temp, "§" + temp);
 		}
-
 		return input;
 	}
 
@@ -341,6 +483,10 @@ public class IOManager {
 		 */
 		give,
 		/**
+		 * Report the mount was kept.
+		 */
+		keep,
+		/**
 		 * Insufficient funds to retrieve mount.
 		 */
 		broke,
@@ -359,8 +505,117 @@ public class IOManager {
 		/**
 		 * Report that you have paid the NPC.
 		 */
-		pay
+		pay,
+		/**
+		 * Report that no mounts are for sale.
+		 */
+		empty
 	};
+	
+	public static enum Interface {
+		paid,
+		pickup,
+		dropoff,
+		pay,
+		purchase,
+		exit,
+		opt,
+		stable,
+		acct,
+		shop,
+		settle,
+		clear,
+		acctexit,
+		shoppurchase,
+		shopexit,
+		prevType,
+		prevHealth,
+		prevJump,
+		prevSpeed,
+		prevColor,
+		prevPattern,
+		nextType,
+		nextHealth,
+		nextJump,
+		nextSpeed,
+		nextColor,
+		nextPattern
+	};
+	
+	public static enum MountNames {
+		pig,
+		horse,
+		mule,
+		donkey,
+		skeleton,
+		zombie
+	};
+	
+	public static enum Colors {
+		white,
+		buckskin,
+		chestnut,
+		bay,
+		black,
+		dapple,
+		liver,
+		plain,
+		blaze,
+		paint,
+		appaloosa,
+		sooty
+	};
+	
+	public static enum Icons {
+		pickup,
+		dropoff,
+		pay,
+		purchase,
+		exit,
+		settleDebt,
+		clearBooks,
+		exitPay,
+		button,
+		pig,
+		horse,
+		donkey,
+		mule,
+		skeleton,
+		zombie,
+		health,
+		jump,
+		speed,
+		white,
+		buckskin,
+		chestnut,
+		bay,
+		black,
+		dapple,
+		liver,
+		plain,
+		blaze,
+		paint,
+		appaloosa,
+		sooty,
+		buy,
+		exitBuy,
+		nil
+	}
+	
+	private static enum Costs {
+		pig,
+		horse,
+		donkey,
+		mule,
+		skeleton,
+		zombie,
+		boat,
+		cart,
+		health,
+		speed,
+		jump,
+		noble
+	}
 
 	public static enum Traits {
 		stable, wharf, station;
@@ -381,8 +636,7 @@ public class IOManager {
 			} else {
 				this.locLog = false;
 			}
-			this.cooldown = config.getInt(this.name() + ".cooldown");
-			this.pampered = config.getString(this.name() + ".pampered");
+			this.pampered = lang.getString(this.name() + ".pampered");
 		}
 
 		public int getMaxMounts() {

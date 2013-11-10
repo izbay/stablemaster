@@ -30,7 +30,7 @@ public class WharfmasterTrait extends Trait implements Listener {
 				.getPlugin("Stablemaster");
 	}
 
-	private static Map<String, StableMgr.StableAcct> Stablemgr = StablemasterTrait.StableMgr;
+	private static Map<String, StableMgr.StableAcct> stablemgr = StableMgr.stableMgr;
 	private static Map<Player, Boolean> grabbed = new HashMap<Player, Boolean>();
 	
 	@EventHandler
@@ -41,16 +41,16 @@ public class WharfmasterTrait extends Trait implements Listener {
 		}
 		final Player player = event.getClicker();
 		StableAcct acct;
-		if (!Stablemgr.containsKey(player.getName())){
+		if (!stablemgr.containsKey(player.getName())){
 			acct = plugin.sm.new StableAcct();
-			Stablemgr.put(player.getName(), acct);
+			stablemgr.put(player.getName(), acct);
 		} else {
-			acct = Stablemgr.get(player.getName());
+			acct = stablemgr.get(player.getName());
 		}
 		Entity vehicle = player.getVehicle();
-		Location loc = this.npc.getBukkitEntity().getLocation();
+		Location loc = this.npc.getStoredLocation();
 		loc.add((player.getLocation().subtract(loc)).multiply(0.2));
-		loc.setY(this.npc.getBukkitEntity().getLocation().getY());
+		loc.setY(this.npc.getStoredLocation().getY());
 		loc.setYaw(player.getLocation().getYaw());
 		loc.setPitch(player.getLocation().getPitch());
 

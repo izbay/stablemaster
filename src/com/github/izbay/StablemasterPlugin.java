@@ -26,7 +26,7 @@ import com.google.common.io.Files;
 
 /**
  * @author izbay
- * @version 1.09
+ * @version 1.11
  */
 public class StablemasterPlugin extends JavaPlugin {
 
@@ -58,7 +58,7 @@ public class StablemasterPlugin extends JavaPlugin {
 
 		if (stable.exists()) {
 			try {
-				StablemasterTrait.StableMgr = SLAPI.load(getDataFolder()
+				StableMgr.stableMgr = SLAPI.load(getDataFolder()
 						+ File.separator + "stable.bin");
 				if (new File(getDataFolder() + File.separator + "placemap.bin")
 						.exists()) {
@@ -104,7 +104,11 @@ public class StablemasterPlugin extends JavaPlugin {
 						StationmasterTrait.class).withName("stationmaster"));
 
 		// Boot up the IOManager
-		IOManager.init(this);
+		try {
+			IOManager.init(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Save the stables on a repeating thread.
 		long saveInterval = (long) (config.getInt("auto-save") * 1200);
@@ -121,7 +125,7 @@ public class StablemasterPlugin extends JavaPlugin {
 	private void saveStables() {
 		getLogger().log(Level.INFO, "Saving player stables.");
 		try {
-			SLAPI.save(StablemasterTrait.StableMgr, getDataFolder()
+			SLAPI.save(StablemasterTrait.stableMgr, getDataFolder()
 					+ File.separator + "stable.bin");
 			SLAPI.save(StableMgr.placeMap, getDataFolder() + File.separator
 					+ "placemap.bin");
@@ -160,7 +164,7 @@ public class StablemasterPlugin extends JavaPlugin {
 						+ "stabled.bin");
 				hasDebt = SLAPI.load(getDataFolder() + File.separator
 						+ "debt.bin");
-				StablemasterTrait.StableMgr = convert(hasStabled, hasDebt);
+				StablemasterTrait.stableMgr = convert(hasStabled, hasDebt);
 
 				// Move the old files.
 				String outdatedPath = getDataFolder() + File.separator
@@ -184,7 +188,7 @@ public class StablemasterPlugin extends JavaPlugin {
 							+ "haspig.bin"));
 				} catch (FileNotFoundException e) {
 				}
-				SLAPI.save(StablemasterTrait.StableMgr, getDataFolder()
+				SLAPI.save(StablemasterTrait.stableMgr, getDataFolder()
 						+ File.separator + "stable.bin");
 			} catch (Exception e) {
 				e.printStackTrace();

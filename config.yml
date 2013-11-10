@@ -1,52 +1,75 @@
-# <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_TYPE> <MOUNT_PAMPERED>
+auto-save: 60 #interval for auto-saving in minutes.
+check-update: true #automatically checks for updates. Set to false to disable.
+lang: en
 
-  auto-save: 60 #interval for auto-saving in minutes.
-  check-update: true #automatically checks for updates. Set to false to disable.
-   
-  mount-cost: #setting of -1 disables sale. 0 enables free give-away.
-    pig: 50
-    horse: -1
-    donkey: -1
-    mule: -1
-  text:
-    greet: "&eHello there! May I help you with anything?"
-    nil: "&cI'm afraid I don't have anything of yours."
-    funds: "&cYou can't afford it!"
-    invalid: "&cYou look lost. You have nothing I can look after!"
-    full: "&cI'm afraid I'm all out of room!"
-    give: "&eGreat! Here's <MOUNT_NAME>!"
-    broke: "&eYou've come up short. Take the <MOUNT_TYPE>. I'll collect next time."
-    debt: "&eI still need you to pay up from last time. It was &a<DEBT>&e."
-    paid: "&eThanks! Now what can I do for you?"
-    stow: "&eDon't you worry! I'll take fine care of <MOUNT_NAME>!"
-    pay: "&2[&fMoney&2] You have sent &f<AMOUNT> &2to &f<NPC_NAME>&2."
-  noble:
-    stow: "&eExcellent! I'll care for <MOUNT_NAME> as if it were my own."
-    free: "&eYour grace! Please take my finest <MOUNT_TYPE>. It is an honor!"
-    give: "&eHere is <MOUNT_NAME>, your grace. <MOUNT_PAMPERED>"
+mount-cost: #setting of > 0 disables sale. 0 enables free give-away.
+  pig: 50
+  horse: 150
+  donkey: 100
+  mule: 100
+  skeleton: 1000
+  zombie: -1
+  health: 5
+  speed: 15
+  jump: 8
+  noble: 0.75
+  geometricCost: "false" # NOT-ACTIVE Are health, speed, and jump multipliers instead of constants?
+  tiered: "false" # NOT-ACTIVE Disregard previous 4 entries and cost by tier instead?
+  t1: 120 # Point totals will automatically be distributed across the amount of tiers declared here.
+  t2: 260
+  t3: 296
+ 
+stable:
+  max-mounts: 27 #value of 0 = unlimited. Must be divisible by 9.
+  price-init: 4
+  price-per-day: 2
+  min-speed: 30
+  max-speed: 120
+  mod-speed: 1
+  min-jump: 30
+  max-jump: 120
+  mod-jump: 1.5
+
+wharf:
+  max-mounts: 64
+  price-init: 2
+  location-log: true # place vehicle where it was taken from? else throw item down
   
-  stable:
-    max-mounts: 27 #value of 0 = unlimited. Must be divisible by 9.
-    price-init: 4
-    price-per-day: 2
-    cooldown: 4 #noble free mount cooldown (in hours).
-    pampered: "Bathed, brushed, and pampered!"
-    
-    free-mount: Pig #type of free mount (Pig, Horse, Donkey, Mule)
-    random-names: "Petunia, Buddy, Stella, Herbert, Emett, Jebediah, Sully, Professor, Farley, Mickey"
-    gui:
-      name: &f # color of names in stable gui
-      bill: &c # color of bill amount in stable gui
-      text: &a # color of 'paid' message in stable gui
-      
-  wharf:
-    max-mounts: 64
-    price-init: 2
-    location-log: true # place vehicle where it was taken from? else throw item down
-    pampered: "I even scrubbed down the hull!"
-    
-  station:
-    max-mounts: 64
-    price-init: 2
-    location-log: true
-    pampered: "Washed and waxed to a brand new shine!"
+station:
+  max-mounts: 64
+  price-init: 2
+  location-log: true
+
+icons:
+  pickup: "SADDLE"
+  dropoff: "BED"
+  pay: "GOLD_INGOT"
+  purchase: "PAPER"
+  exit: "WOOD_DOOR"
+  settleDebt: "FEATHER"
+  clearBooks: "BOOK"
+  exitPay: "WOOD_DOOR"
+  button: "STONE_BUTTON"
+  pig: "CARROT_ITEM"
+  horse: "SADDLE"
+  donkey: "APPLE"
+  mule: "CHEST"
+  skeleton: "BONE"
+  zombie: "ROTTEN_FLESH"
+  health: "RED_MUSHROOM"
+  jump: "FENCE_GATE"
+  speed: "FEATHER"
+  white: "SNOW_BLOCK"
+  buckskin: "WOOD"
+  chestnut: "HARD_CLAY"
+  bay: "SOUL_SAND"
+  black: "COAL_BLOCK"
+  dapple: "STONE"
+  liver: "NETHER_BRICK"
+  plain: "LEATHER"
+  blaze: "GHAST_TEAR"
+  paint: "MILK_BUCKET"
+  appaloosa: "PUMPKIN_SEEDS"
+  sooty: "COAL"
+  buy: "GOLD_INGOT"
+  exitBuy: "WOOD_DOOR"
