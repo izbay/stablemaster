@@ -10,8 +10,8 @@ import net.minecraft.server.v1_6_R3.GenericAttributes;
 
 import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
 
+//import plugin.Nogtail.nHorses.*;
 import net.citizensnpcs.api.npc.NPC;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -54,54 +54,33 @@ public class Menu implements Listener {
 	private static Map<Player, NPC> npcMap = new HashMap<Player, NPC>();
 	// stableMgr imported from the trait. All stable data for every player.
 	private static Map<String, StableMgr.StableAcct> stableMgr;
-	// Used to handle dynamically built menu of mounts for sale.
-	// private static Map<Integer, EntityType> buttonList = new HashMap<Integer,
-	// EntityType>();
 
 	private static StableMgr sm = new StableMgr();
 	private static Plugin plugin;
+	public static boolean hasnHorses; // Will be used for future compatability.
 	private static Menu menu;
 	private static Inventory rootMenu;
 	private static Inventory nobleMenu;
 
 	// Enforce static class with private constructor
 	private Menu() {
-		Menu.plugin.getServer().getPluginManager()
-				.registerEvents(this, Menu.plugin);
-		rootMenu.setItem(0, IOManager.makeButton(IOManager.Icons.pickup,
-				Interface.pickup, false));
-		rootMenu.setItem(1, IOManager.makeButton(
-				IOManager.Icons.dropoff,
-				Interface.dropoff,
-				false,
-				IOManager.econFormat(null,
-						IOManager.Traits.stable.getPriceInit())));
-		rootMenu.setItem(2,
-				IOManager.makeButton(IOManager.Icons.pay, Interface.pay, false));
-		rootMenu.setItem(3, IOManager.makeButton(IOManager.Icons.purchase,
-				Interface.purchase, false));
-		rootMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exit,
-				Interface.exit, false));
+		Menu.plugin.getServer().getPluginManager().registerEvents(this, Menu.plugin);
+		
+		rootMenu.setItem(0, IOManager.makeButton(IOManager.Icons.pickup, Interface.pickup, false));
+		rootMenu.setItem(1, IOManager.makeButton(IOManager.Icons.dropoff, Interface.dropoff, false,
+				IOManager.econFormat(null, IOManager.Traits.stable.getPriceInit())));
+		rootMenu.setItem(2,IOManager.makeButton(IOManager.Icons.pay, Interface.pay, false));
+		rootMenu.setItem(3, IOManager.makeButton(IOManager.Icons.purchase, Interface.purchase, false));
+		rootMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exit, Interface.exit, false));
 
-		nobleMenu.setItem(0, IOManager.makeButton(IOManager.Icons.pickup,
-				Interface.pickup, true));
-		nobleMenu.setItem(1, IOManager.makeButton(
-				IOManager.Icons.dropoff,
-				Interface.dropoff,
-				true,
-				"§9"
-						+ IOManager.econFormat(null,
-								IOManager.Traits.stable.getPriceInit()) + " ("
-						+ IOManager.econFormat(null, 0) + "§9)"));
-		nobleMenu.setItem(2,
-				IOManager.makeButton(IOManager.Icons.pay, Interface.pay, true));
-		nobleMenu.setItem(3, IOManager.makeButton(IOManager.Icons.purchase,
-				Interface.purchase, true));
-		nobleMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exit,
-				Interface.exit, true));
-
+		nobleMenu.setItem(0, IOManager.makeButton(IOManager.Icons.pickup, Interface.pickup, true));
+		nobleMenu.setItem(1, IOManager.makeButton(IOManager.Icons.dropoff, Interface.dropoff, true,
+				"§9" + IOManager.econFormat(null,IOManager.Traits.stable.getPriceInit()) + " ("+ IOManager.econFormat(null, 0) + "§9)"));
+		nobleMenu.setItem(2, IOManager.makeButton(IOManager.Icons.pay, Interface.pay, true));
+		nobleMenu.setItem(3, IOManager.makeButton(IOManager.Icons.purchase, Interface.purchase, true));
+		nobleMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exit, Interface.exit, true));
 	}
-
+	
 	/**
 	 * 
 	 * @param player
@@ -114,8 +93,7 @@ public class Menu implements Listener {
 	 * @param npc
 	 *            Which npc the player spoke to to open this menu.
 	 */
-	public static void openRoot(Player player,
-			Map<String, StableMgr.StableAcct> stablemgr, Plugin sm, NPC npc) {
+	public static void openRoot(Player player, Map<String, StableMgr.StableAcct> stablemgr, Plugin sm, NPC npc) {
 		stableMgr = stablemgr;
 		plugin = sm;
 		if (rootMenu == null) {
@@ -160,24 +138,19 @@ public class Menu implements Listener {
 			stableMgr.get(player.getName()).addMount(mount);
 			IOManager.msg(player, Action.keep, mount);
 		} else {
-
 			if (sold)
 				IOManager.msg(player, Action.give, mount);
 
 			// Get the midpoint.
 			Location location = npc.getStoredLocation();
-			location.add((player.getLocation().subtract(location))
-					.multiply(0.8));
+			location.add((player.getLocation().subtract(location)).multiply(0.8));
 			location.setPitch(player.getLocation().getYaw() + 180);
 			location.setYaw(0);
 
-			LivingEntity newMount = (LivingEntity) player.getWorld()
-					.spawnEntity(location, mount.getType());
+			LivingEntity newMount = (LivingEntity) player.getWorld().spawnEntity(location, mount.getType());
 			newMount.setRemoveWhenFarAway(false);
-			if (!mount.getName().equals(
-					newMount.getClass().getSimpleName().replace("Craft", ""))
-					&& !mount.getName().equals("Donkey")
-					&& !mount.getName().equals("Mule")) {
+			if (!mount.getName().equals(newMount.getClass().getSimpleName().replace("Craft", ""))
+					&& !mount.getName().equals("Donkey") && !mount.getName().equals("Mule")) {
 				newMount.setCustomName(mount.getName());
 				newMount.setCustomNameVisible(true);
 			}
@@ -195,12 +168,11 @@ public class Menu implements Listener {
 				((Horse) newMount).setMaxHealth(mount.getHealth());
 				((Horse) newMount).setJumpStrength(mount.getJumpstr());
 				((Horse) newMount).setCarryingChest(mount.HasChest());
+				
 				if (mount.HasChest()) {
-					((Horse) newMount).getInventory().setContents(
-							mount.getInventory());
+					((Horse) newMount).getInventory().setContents(mount.getInventory());
 				}
-				((Horse) newMount).getInventory().setSaddle(
-						new ItemStack(Material.SADDLE));
+				((Horse) newMount).getInventory().setSaddle(mount.getSaddle());
 				((Horse) newMount).getInventory().setArmor(mount.getArmor());
 				((Horse) newMount).setTamed(true);
 				((Horse) newMount).setOwner(player);
@@ -208,16 +180,24 @@ public class Menu implements Listener {
 						.getHandle()).getAttributeInstance(GenericAttributes.d);
 				attributes.setValue(mount.getSpeed());
 			}
+			
+			/** UUID Compatability
+			if(hasnHorses && mount.getUUID() != null)
+				nHorses.getDataManager().changeUuid(mount.getUUID(), newMount.getUniqueId());
+			*/
+			
 			if (!player.isInsideVehicle())
 				newMount.setPassenger(player);
+			
+
 		}
 	}
 
 	@EventHandler
 	void onInventoryClick(InventoryClickEvent event) {
 		boolean validSlot = (event.getRawSlot() <= 8 && event.getRawSlot() >= 0);
-		if ((event.getInventory().getTitle().equalsIgnoreCase(IOManager.getString(Interface.opt, false)) ||
-			event.getInventory().getTitle().equalsIgnoreCase(IOManager.getString(Interface.opt, true)))
+		if ((event.getInventory().getTitle().equalsIgnoreCase(IOManager.getString(Interface.opt, false))
+				|| event.getInventory().getTitle().equalsIgnoreCase(IOManager.getString(Interface.opt, true)))
 				&& validSlot) {
 			event.setCancelled(true);
 			final Player player = (Player) event.getWhoClicked();
@@ -226,13 +206,11 @@ public class Menu implements Listener {
 			// Go to Stable
 			case 0:
 				if (stableMgr.get(player.getName()).getNumMounts() > 0) {
-					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-							new Runnable() {
-								public void run() {
-									Menu.openStableGUI(player,
-											stableMgr.get(player.getName()));
-								}
-							}, (long) .005);
+					Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,new Runnable() {
+						public void run() {
+							Menu.openStableGUI(player,stableMgr.get(player.getName()));
+						}
+					}, (long) .005);
 				} else {
 					IOManager.msg(player, Action.nil, null);
 					player.closeInventory();
@@ -243,37 +221,33 @@ public class Menu implements Listener {
 			// Drop off mount
 			case 1:
 				player.closeInventory();
-				if (player.isInsideVehicle()
-						&& player.getVehicle() instanceof LivingEntity) {
+				if (player.isInsideVehicle() && player.getVehicle() instanceof LivingEntity) {
 					if (stableMgr.get(player.getName()).getDebt() > 0) {
 						StableAcct acct = stableMgr.get(player.getName());
 						IOManager.msg(player, Action.debt, acct);
 					} else {
-						LivingEntity vehicle = (LivingEntity) player
-								.getVehicle();
+						LivingEntity vehicle = (LivingEntity) player.getVehicle();
 						String name = IOManager.getVehicleName(player);
 						StableAcct acct = stableMgr.get(player.getName());
 						if (acct.hasRoom()) {
-							double price = IOManager.Traits.stable
-									.getPriceInit();
-							if (player
-									.hasPermission("stablemaster.noble.service")) {
+							double price = IOManager.Traits.stable.getPriceInit();
+							if (player.hasPermission("stablemaster.noble.service")) {
 								price = 0;
 							}
-							if (IOManager.charge(npcMap.get(player), player,
-									price)) {
+							if (IOManager.charge(npcMap.get(player), player, price)) {
 								IOManager.msg(player, Action.stow, null);
+								Mount mount;
 								if (vehicle.getType().equals(EntityType.HORSE)) {
-									acct.addMount(sm.new Mount(name, vehicle
-											.getType(), System
-											.currentTimeMillis(),
-											(Horse) vehicle));
+									mount = sm.new Mount(name, vehicle.getType(), 
+											System.currentTimeMillis(), (Horse) vehicle);
 								} else {
-									acct.addMount(sm.new Mount(name, vehicle
-											.getType(), System
-											.currentTimeMillis()));
+									mount = sm.new Mount(name, vehicle.getType(), 
+											System.currentTimeMillis());
 								}
 								Entity veh = player.getVehicle();
+								mount.setUUID(veh.getUniqueId());
+								acct.addMount(mount);
+								
 								veh.eject();
 								veh.remove();
 							}
@@ -292,8 +266,7 @@ public class Menu implements Listener {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 						new Runnable() {
 							public void run() {
-								cashMap.put(player, new CashMenu(player,
-										stableMgr.get(player.getName())));
+								cashMap.put(player, new CashMenu(player,stableMgr.get(player.getName())));
 							}
 						}, (long) .005);
 				break;
@@ -302,11 +275,8 @@ public class Menu implements Listener {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 						new Runnable() {
 							public void run() {
-								buyMap.put(
-										player,
-										new BuyMenu(player, stableMgr
-												.get(player.getName()), npcMap
-												.get(player)));
+								buyMap.put(player,
+										new BuyMenu(player, stableMgr.get(player.getName()), npcMap.get(player)));
 							}
 						}, (long) .005);
 				break;
@@ -338,13 +308,12 @@ public class Menu implements Listener {
 		 *            Corresponding account of the player.
 		 */
 		public PlayerMenu(Player player, StableAcct stableAcct) {
-			name = player.getName() + IOManager.getString(Interface.stable, player.hasPermission("stablemaster.noble"));
+			name = player.getName() + IOManager.getString(Interface.stable,
+					player.hasPermission("stablemaster.noble"));
 
 			// Number of mounts
-			int maxSize = (int) (Math.ceil((double) (IOManager.Traits.stable
-					.getMaxMounts()) / 9) * 9);
-			int currSize = (int) (Math
-					.ceil((double) (stableAcct.getNumMounts()) / 9) * 9);
+			int maxSize = (int) (Math.ceil((double) (IOManager.Traits.stable.getMaxMounts()) / 9) * 9);
+			int currSize = (int) (Math.ceil((double) (stableAcct.getNumMounts()) / 9) * 9);
 			if (maxSize == 0 || currSize < maxSize) {
 				size = currSize;
 			} else {
@@ -352,8 +321,7 @@ public class Menu implements Listener {
 			}
 
 			acct = stableAcct;
-			Menu.plugin.getServer().getPluginManager()
-					.registerEvents(this, Menu.plugin);
+			Menu.plugin.getServer().getPluginManager().registerEvents(this, Menu.plugin);
 			open(player);
 		}
 
@@ -392,8 +360,7 @@ public class Menu implements Listener {
 
 			} else if (mount.getType().equals(EntityType.HORSE)) {
 
-				if (mount.getVariant() == null
-						|| mount.getVariant().equals(Horse.Variant.HORSE)) {
+				if (mount.getVariant() == null || mount.getVariant().equals(Horse.Variant.HORSE)) {
 					button = new ItemStack(Material.SADDLE, 1);
 
 				} else if (mount.getVariant().equals(Horse.Variant.MULE)) {
@@ -413,8 +380,7 @@ public class Menu implements Listener {
 
 			ItemMeta im = button.getItemMeta();
 			im.setDisplayName(mount.getName());
-			im.setLore(Arrays.asList(IOManager.econFormat(player,
-					IOManager.getCost(player, mount))));
+			im.setLore(Arrays.asList(IOManager.econFormat(player, IOManager.getCost(player, mount))));
 			button.setItemMeta(im);
 			return button;
 		}
@@ -439,8 +405,7 @@ public class Menu implements Listener {
 
 		@EventHandler
 		void onInventoryClick(InventoryClickEvent event) {
-			boolean validSlot = (event.getRawSlot() < acct.getNumMounts() && event
-					.getRawSlot() >= 0);
+			boolean validSlot = (event.getRawSlot() < acct.getNumMounts() && event.getRawSlot() >= 0);
 
 			if (event.getInventory().getTitle().equals(name) && validSlot) {
 				event.setCancelled(true);
@@ -483,17 +448,20 @@ public class Menu implements Listener {
 		 *            Corresponding StableAcct.
 		 */
 		public CashMenu(Player player, StableAcct stableAcct) {
-			name = player.getName() + IOManager.getString(Interface.acct, player.hasPermission("stablemaster.noble"));
+			name = player.getName() + IOManager.getString(Interface.acct,
+					player.hasPermission("stablemaster.noble"));
 			acct = stableAcct;
-			Menu.plugin.getServer().getPluginManager()
-					.registerEvents(this, Menu.plugin);
+			Menu.plugin.getServer().getPluginManager().registerEvents(this, Menu.plugin);
 
 			Inventory cashMenu = Bukkit.createInventory(player, 9, name);
 			cashMenu.setItem(0, IOManager.makeButton(
-					IOManager.Icons.settleDebt,Interface.settle, false, IOManager.econFormat(player, acct.getDebt())));
+					IOManager.Icons.settleDebt, Interface.settle, false,
+					IOManager.econFormat(player, acct.getDebt())));
 			cashMenu.setItem(1, IOManager.makeButton(
-					IOManager.Icons.clearBooks, Interface.clear, false, IOManager.printTotalCost(player, acct)));
-			cashMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exitBuy, Interface.acctexit, false));
+					IOManager.Icons.clearBooks, Interface.clear, false,
+					IOManager.printTotalCost(player, acct)));
+			cashMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exitBuy,
+					Interface.acctexit, false));
 			player.openInventory(cashMenu);
 		}
 
@@ -507,8 +475,7 @@ public class Menu implements Listener {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 					new Runnable() {
 						public void run() {
-							Menu.openRoot(player, stableMgr, plugin,
-									npcMap.get(player));
+							Menu.openRoot(player, stableMgr, plugin, npcMap.get(player));
 						}
 					}, 1);
 			HandlerList.unregisterAll(this);
@@ -526,8 +493,7 @@ public class Menu implements Listener {
 
 				// Pay Debt
 				case 0:
-					if (IOManager.charge(npcMap.get(player), player,
-							acct.getDebt())) {
+					if (IOManager.charge(npcMap.get(player), player, acct.getDebt())) {
 						IOManager.msg(player, Action.paid, null);
 						acct.setDebt(0);
 					}
@@ -536,8 +502,7 @@ public class Menu implements Listener {
 
 				// Pay Balance
 				case 1:
-					if (IOManager.charge(npcMap.get(player), player,
-							IOManager.getTotalCost(player, acct))) {
+					if (IOManager.charge(npcMap.get(player), player, IOManager.getTotalCost(player, acct))) {
 						IOManager.msg(player, Action.paid, null);
 						long newTime = System.currentTimeMillis();
 						for (int i = 0; i < acct.getNumMounts(); i++) {
@@ -573,8 +538,6 @@ public class Menu implements Listener {
 	 */
 	private class BuyMenu implements Listener {
 		private String name;
-		@SuppressWarnings("unused")
-		private StableAcct acct;
 		private NPC npc;
 		private Player player;
 
@@ -587,8 +550,8 @@ public class Menu implements Listener {
 		private int speed = 0;
 		private int color = 0;
 		private int pattern = 0;
-		
-		private String[] typeOrder = {"pig", "horse", "mule", "donkey", "skeleton", "zombie"};
+
+		private String[] typeOrder = { "pig", "horse", "mule", "donkey", "skeleton", "zombie" };
 		private int healthmin = 15;
 		private int healthmax = 30;
 		private int healthrange = healthmax - healthmin + 1;
@@ -600,7 +563,7 @@ public class Menu implements Listener {
 		private int speedmax = IOManager.maxspeed;
 		private int speedmod = IOManager.modjump;
 		private int speedrange = speedmax - speedmin + 1;
-		
+
 		private Inventory menu;
 		private double cost = IOManager.mountPrice.get("pig");
 
@@ -615,19 +578,19 @@ public class Menu implements Listener {
 		 *            The NPC that was being spoken to.
 		 */
 		public BuyMenu(Player player, StableAcct stableAcct, NPC npc) {
-			name = IOManager.getString(Interface.shop, player.hasPermission("stablemaster.noble"));
-			acct = stableAcct;
+			name = IOManager.getString(Interface.shop,
+					player.hasPermission("stablemaster.noble"));
 			this.npc = npc;
 			this.player = player;
 			Menu.plugin.getServer().getPluginManager()
 					.registerEvents(this, Menu.plugin);
 			menu = buildMenu(player);
-			if(menu == null){
+			if (menu == null) {
 				IOManager.msg(player, Action.empty, null);
 				killMenu(player);
 			} else {
 				player.openInventory(menu);
-				if(type != 0) {
+				if (type != 0) {
 					updateMenu(player);
 				}
 			}
@@ -637,27 +600,28 @@ public class Menu implements Listener {
 			Inventory cashMenu = Bukkit.createInventory(player, 27, name);
 			cashMenu.setItem(0, IOManager.makeButton(IOManager.Icons.button, Interface.prevType, false));
 			cashMenu.setItem(1, IOManager.makeButton(IOManager.Icons.pig, 1, IOManager.mountNames.get(MountNames.pig),
-					IOManager.econFormat(player,IOManager.mountPrice.get("pig"))));
+					IOManager.econFormat(player, IOManager.mountPrice.get("pig"))));
 			cashMenu.setItem(2, IOManager.makeButton(IOManager.Icons.button, Interface.nextType, false));
 			cashMenu.setItem(8, IOManager.makeButton(IOManager.Icons.exitBuy, Interface.shopexit, false));
+			
 			if (player.hasPermission("stablemaster.noble.discount")) {
 				double oldcost = cost;
 				cost *= IOManager.mountPrice.get("noble");
-				cashMenu.setItem(26, IOManager.makeButton(
-						IOManager.Icons.buy, Interface.shoppurchase, true, "§9" + oldcost + " ("
-								+ IOManager.econFormat(player, cost) + "§9)"));
+				cashMenu.setItem(26, IOManager.makeButton(IOManager.Icons.buy, Interface.shoppurchase, true, 
+						"§9" + oldcost + " (" + IOManager.econFormat(player, cost) + "§9)"));
 			} else {
-				cashMenu.setItem(26, IOManager.makeButton(IOManager.Icons.buy, Interface.shoppurchase, false, IOManager.econFormat(player, cost)));
+				cashMenu.setItem(26, IOManager.makeButton(IOManager.Icons.buy, Interface.shoppurchase, false,
+						IOManager.econFormat(player, cost)));
 			}
-			
-			// Loop to the first available mount. 
+
+			// Loop to the first available mount.
 			while (type < typeOrder.length && IOManager.mountPrice.get(typeOrder[type]) < 0) {
 				type = (type + 1);
 			}
 			// Check if nothing's available and close if that's the case.
 			if (type >= typeOrder.length)
 				return null;
-			
+
 			return cashMenu;
 		}
 
@@ -666,12 +630,8 @@ public class Menu implements Listener {
 			// Type (and subsequently which buttons are displayed)
 			switch (type) {
 			case 0:
-				menu.setItem(1, IOManager.makeButton(
-						IOManager.Icons.pig,
-						1,
-						IOManager.mountNames.get(MountNames.pig),
-						IOManager.econFormat(player,
-								IOManager.mountPrice.get("pig"))));
+				menu.setItem(1, IOManager.makeButton(IOManager.Icons.pig, 1, IOManager.mountNames.get(MountNames.pig), 
+						IOManager.econFormat(player, IOManager.mountPrice.get("pig"))));
 
 				// Remove all extra buttons.
 				menu.setItem(4,
@@ -699,12 +659,8 @@ public class Menu implements Listener {
 				break;
 
 			case 1:
-				menu.setItem(1, IOManager.makeButton(
-						IOManager.Icons.horse,
-						1,
-						IOManager.mountNames.get(MountNames.horse),
-						IOManager.econFormat(player,
-								IOManager.mountPrice.get("horse"))));
+				menu.setItem(1, IOManager.makeButton(IOManager.Icons.horse, 1, IOManager.mountNames.get(MountNames.horse),
+						IOManager.econFormat(player, IOManager.mountPrice.get("horse"))));
 
 				// Draw all buttons in.
 				menu.setItem(4, IOManager.makeButton(IOManager.Icons.button, Interface.prevHealth, false));
@@ -721,12 +677,8 @@ public class Menu implements Listener {
 				cost = IOManager.mountPrice.get("horse");
 				break;
 			case 2:
-				menu.setItem(1, IOManager.makeButton(
-						IOManager.Icons.mule,
-						1,
-						IOManager.mountNames.get(MountNames.mule),
-						IOManager.econFormat(player,
-								IOManager.mountPrice.get("mule"))));
+				menu.setItem(1, IOManager.makeButton(IOManager.Icons.mule, 1, IOManager.mountNames.get(MountNames.mule),
+						IOManager.econFormat(player, IOManager.mountPrice.get("mule"))));
 
 				// Draw in only the used buttons.
 				menu.setItem(4, IOManager.makeButton(IOManager.Icons.button, Interface.prevHealth, false));
@@ -739,7 +691,7 @@ public class Menu implements Listener {
 				menu.setItem(15, IOManager.makeButton(IOManager.Icons.button, Interface.nextSpeed, false));
 				menu.setItem(20, IOManager.makeButton(IOManager.Icons.nil, "", ""));
 				menu.setItem(24, IOManager.makeButton(IOManager.Icons.nil, "", ""));
-	
+
 				cost = IOManager.mountPrice.get("mule");
 				break;
 
@@ -766,12 +718,8 @@ public class Menu implements Listener {
 				cost = IOManager.mountPrice.get("donkey");
 				break;
 			case 4:
-				menu.setItem(1, IOManager.makeButton(
-						IOManager.Icons.skeleton,
-						1,
-						IOManager.mountNames.get(MountNames.skeleton),
-						IOManager.econFormat(player,
-								IOManager.mountPrice.get("skeleton"))));
+				menu.setItem(1, IOManager.makeButton(IOManager.Icons.skeleton, 1, IOManager.mountNames.get(MountNames.skeleton),
+						IOManager.econFormat(player, IOManager.mountPrice.get("skeleton"))));
 
 				// Draw in only the used buttons.
 				menu.setItem(4, IOManager.makeButton(IOManager.Icons.button, Interface.prevHealth, false));
@@ -789,12 +737,8 @@ public class Menu implements Listener {
 				break;
 
 			case 5:
-				menu.setItem(1, IOManager.makeButton(
-						IOManager.Icons.zombie,
-						1,
-						IOManager.mountNames.get(MountNames.zombie),
-						IOManager.econFormat(player,
-								IOManager.mountPrice.get("zombie"))));
+				menu.setItem(1, IOManager.makeButton(IOManager.Icons.zombie, 1, IOManager.mountNames.get(MountNames.zombie),
+						IOManager.econFormat(player, IOManager.mountPrice.get("zombie"))));
 
 				// Draw in only the used buttons.
 				menu.setItem(4, IOManager.makeButton(IOManager.Icons.button, Interface.prevHealth, false));
@@ -814,58 +758,43 @@ public class Menu implements Listener {
 
 			// Health
 			if (type == 0) {
-				menu.setItem(5,
-						IOManager.makeButton(IOManager.Icons.nil, "", ""));
+				menu.setItem(5,IOManager.makeButton(IOManager.Icons.nil, "", ""));
 			} else {
 				if (health == 0) {
-					menu.setItem(5, IOManager.makeButton(
-							IOManager.Icons.health, healthmin, "§a" + healthmin, ""));
+					menu.setItem(5, IOManager.makeButton(IOManager.Icons.health, healthmin, "§a" + healthmin, ""));
 				} else {
 					menu.setItem(5, IOManager.makeButton(
-							IOManager.Icons.health,
-							health + healthmin,
-							"§a" + (health + healthmin),
-							IOManager.econFormat(player,
-									IOManager.mountPrice.get("health")
-											* (health))));
+							IOManager.Icons.health, health + healthmin, "§a" + (health + healthmin),
+							IOManager.econFormat(player, IOManager.mountPrice.get("health") * (health))));
 					cost += (IOManager.mountPrice.get("health") * health);
 				}
 			}
 
 			// Jump
 			if (type == 0) {
-				menu.setItem(10,
-						IOManager.makeButton(IOManager.Icons.nil, "", ""));
+				menu.setItem(10, IOManager.makeButton(IOManager.Icons.nil, "", ""));
 			} else {
 				if (jump == 0) {
-					menu.setItem(10, IOManager.makeButton(IOManager.Icons.jump,
-							1, "§a" + ((double)jumpmin)/100, ""));
+					menu.setItem(10, IOManager.makeButton(
+							IOManager.Icons.jump, 1, "§a" + ((double) jumpmin) / 100, ""));
 				} else {
 					menu.setItem(10, IOManager.makeButton(
-							IOManager.Icons.jump,
-							1,
-							"§a" + ((double)(jump + jumpmin))/100,
-							IOManager.econFormat(player,
-									IOManager.mountPrice.get("jump") * (jump))));
+							IOManager.Icons.jump, 1, "§a" + ((double) (jump + jumpmin)) / 100,
+							IOManager.econFormat(player, IOManager.mountPrice.get("jump") * (jump))));
 					cost += (IOManager.mountPrice.get("jump") * jump);
 				}
 			}
 
 			// Speed
 			if (type == 0) {
-				menu.setItem(14,
-						IOManager.makeButton(IOManager.Icons.nil, "", ""));
+				menu.setItem(14, IOManager.makeButton(IOManager.Icons.nil, "", ""));
 			} else {
 				if (speed == 0) {
-					menu.setItem(14, IOManager.makeButton(
-							IOManager.Icons.speed, 1,
-							"§a" + ((double)speedmin)/100,""));
+					menu.setItem(14, IOManager.makeButton(IOManager.Icons.speed, 1, "§a" + ((double) speedmin) / 100, ""));
 				} else {
-					menu.setItem(14, IOManager.makeButton(
-							IOManager.Icons.speed, 1,
-									"§a"+ ((double)(speed + speedmin))/100, IOManager.econFormat(
-									player, IOManager.mountPrice.get("speed")
-											* (speed))));
+					menu.setItem(14, 
+							IOManager .makeButton(IOManager.Icons.speed, 1, "§a" + ((double) (speed + speedmin)) / 100,
+							IOManager.econFormat(player, IOManager.mountPrice.get("speed") * (speed))));
 					cost += (IOManager.mountPrice.get("speed") * speed);
 				}
 			}
@@ -875,15 +804,18 @@ public class Menu implements Listener {
 				switch (color) {
 				case 0:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.white, 1, IOManager.colorsMap.get(Colors.white), ""));
+							IOManager.Icons.white, 1,
+							IOManager.colorsMap.get(Colors.white), ""));
 					break;
 				case 1:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.buckskin, 2, IOManager.colorsMap.get(Colors.buckskin), ""));
+							IOManager.Icons.buckskin, 2,
+							IOManager.colorsMap.get(Colors.buckskin), ""));
 					break;
 				case 2:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.chestnut, 3, IOManager.colorsMap.get(Colors.chestnut), ""));
+							IOManager.Icons.chestnut, 3,
+							IOManager.colorsMap.get(Colors.chestnut), ""));
 					break;
 				case 3:
 					menu.setItem(19, IOManager.makeButton(IOManager.Icons.bay,
@@ -891,20 +823,22 @@ public class Menu implements Listener {
 					break;
 				case 4:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.black, 5, IOManager.colorsMap.get(Colors.black), ""));
+							IOManager.Icons.black, 5,
+							IOManager.colorsMap.get(Colors.black), ""));
 					break;
 				case 5:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.dapple, 6, IOManager.colorsMap.get(Colors.dapple), ""));
+							IOManager.Icons.dapple, 6,
+							IOManager.colorsMap.get(Colors.dapple), ""));
 					break;
 				case 6:
 					menu.setItem(19, IOManager.makeButton(
-							IOManager.Icons.liver, 7, IOManager.colorsMap.get(Colors.liver), ""));
+							IOManager.Icons.liver, 7,
+							IOManager.colorsMap.get(Colors.liver), ""));
 					break;
 				}
 			} else {
-				menu.setItem(19,
-						IOManager.makeButton(IOManager.Icons.nil, "", ""));
+				menu.setItem(19, IOManager.makeButton(IOManager.Icons.nil, "", ""));
 			}
 
 			// Style
@@ -912,23 +846,28 @@ public class Menu implements Listener {
 				switch (pattern) {
 				case 0:
 					menu.setItem(23, IOManager.makeButton(
-							IOManager.Icons.plain, 1, IOManager.colorsMap.get(Colors.plain), ""));
+							IOManager.Icons.plain, 1,
+							IOManager.colorsMap.get(Colors.plain), ""));
 					break;
 				case 1:
 					menu.setItem(23, IOManager.makeButton(
-							IOManager.Icons.blaze, 2, IOManager.colorsMap.get(Colors.blaze), ""));
+							IOManager.Icons.blaze, 2,
+							IOManager.colorsMap.get(Colors.blaze), ""));
 					break;
 				case 2:
 					menu.setItem(23, IOManager.makeButton(
-							IOManager.Icons.paint, 3, IOManager.colorsMap.get(Colors.paint), ""));
+							IOManager.Icons.paint, 3,
+							IOManager.colorsMap.get(Colors.paint), ""));
 					break;
 				case 3:
 					menu.setItem(23, IOManager.makeButton(
-							IOManager.Icons.appaloosa, 4, IOManager.colorsMap.get(Colors.appaloosa), ""));
+							IOManager.Icons.appaloosa, 4,
+							IOManager.colorsMap.get(Colors.appaloosa), ""));
 					break;
 				case 4:
 					menu.setItem(23, IOManager.makeButton(
-							IOManager.Icons.sooty, 5, IOManager.colorsMap.get(Colors.sooty), ""));
+							IOManager.Icons.sooty, 5,
+							IOManager.colorsMap.get(Colors.sooty), ""));
 					break;
 				}
 			} else {
@@ -943,7 +882,9 @@ public class Menu implements Listener {
 						IOManager.Icons.pay, Interface.shoppurchase, true,
 						"§9" + oldcost + " (" + IOManager.econFormat(player, cost) + "§9)"));
 			} else {
-				menu.setItem(26, IOManager.makeButton(IOManager.Icons.pay, Interface.shoppurchase, false, IOManager.econFormat(player, cost)));
+				menu.setItem(26, IOManager.makeButton(
+						IOManager.Icons.pay,Interface.shoppurchase, false,
+						IOManager.econFormat(player, cost)));
 			}
 		}
 
@@ -957,8 +898,7 @@ public class Menu implements Listener {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 					new Runnable() {
 						public void run() {
-							Menu.openRoot(player, stableMgr, plugin,
-									npcMap.get(player));
+							Menu.openRoot(player, stableMgr, plugin,npcMap.get(player));
 						}
 					}, 1);
 			HandlerList.unregisterAll(this);
@@ -982,6 +922,7 @@ public class Menu implements Listener {
 						do {
 							type = ((((type - 1) % 6) + 6) % 6);
 						} while (IOManager.mountPrice.get(typeOrder[type]) < 0);
+						
 						if (type != 2) {
 							color = 0;
 							pattern = 0;
@@ -992,6 +933,7 @@ public class Menu implements Listener {
 							speed = 0;
 						}
 						break;
+						
 					// Next mount type
 					case 2:
 						do {
@@ -1007,22 +949,26 @@ public class Menu implements Listener {
 							speed = 0;
 						}
 						break;
+						
 					// Previous health
 					case 4:
 						if (type != 0) {
 							health = ((((health - 1) % healthrange) + healthrange) % healthrange);
 						}
 						break;
+						
 					// Next health
 					case 6:
 						if (type != 0) {
 							health = (health + 1) % healthrange;
 						}
 						break;
+						
 					// Exit
 					case 8:
 						killMenu(player);
 						break;
+						
 					// Previous jump
 					case 9:
 						if (type != 0) {
@@ -1030,54 +976,62 @@ public class Menu implements Listener {
 						}
 						break;
 					// Next jump
+						
 					case 11:
 						if (type != 0) {
 							jump = (jump + 1) % jumprange;
 						}
 						break;
+						
 					// Previous speed
 					case 13:
 						if (type != 0) {
 							speed = ((((speed - 1) % speedrange) + speedrange) % speedrange);
 						}
 						break;
+						
 					// Next speed
 					case 15:
 						if (type != 0) {
 							speed = (speed + 1) % speedrange;
 						}
 						break;
+						
 					// Previous color
 					case 18:
 						if (type == 1) {
 							color = ((((color - 1) % 7) + 7) % 7);
 						}
 						break;
+						
 					// Next color
 					case 20:
 						if (type == 1) {
 							color = (color + 1) % 7;
 						}
 						break;
+						
 					// Previous style
 					case 22:
 						if (type == 1) {
 							pattern = ((((pattern - 1) % 5) + 5) % 5);
 						}
 						break;
+						
 					// Next style
 					case 24:
 						if (type == 1) {
 							pattern = (pattern + 1) % 5;
 						}
 						break;
+						
 					// Purchase
 					case 26:
 						if (IOManager.charge(npc, player, cost)) {
 							Mount thisMount = null;
-							// Deconstruct those int values to build the mount
-							// the player selected!
+							// Deconstruct those int values to build the mount the player selected!
 							switch (type) {
+							
 							// Pig
 							case 0:
 								thisMount = sm.new Mount(
@@ -1096,8 +1050,7 @@ public class Menu implements Listener {
 
 								// Set the color/pattern.
 								thisMount.setColor(Horse.Color.values()[color]);
-								thisMount
-										.setStyle(Horse.Style.values()[pattern]);
+								thisMount.setStyle(Horse.Style.values()[pattern]);
 								break;
 
 							// Mule
@@ -1124,8 +1077,7 @@ public class Menu implements Listener {
 										IOManager.getSomeName(),
 										EntityType.HORSE,
 										System.currentTimeMillis());
-								thisMount
-										.setVariant(Horse.Variant.SKELETON_HORSE);
+								thisMount.setVariant(Horse.Variant.SKELETON_HORSE);
 								break;
 
 							// Zombie
@@ -1134,8 +1086,7 @@ public class Menu implements Listener {
 										IOManager.getSomeName(),
 										EntityType.HORSE,
 										System.currentTimeMillis());
-								thisMount
-										.setVariant(Horse.Variant.UNDEAD_HORSE);
+								thisMount.setVariant(Horse.Variant.UNDEAD_HORSE);
 								break;
 							}
 
@@ -1143,12 +1094,10 @@ public class Menu implements Listener {
 							// saddle if it's a horse type.
 							if (type != 0) {
 								thisMount.setSpeed((((double) speed + speedmin) / 100) * speedmod);
-								thisMount
-										.setJumpstr((((double) jump + jumpmin) / 100) * jumpmod);
+								thisMount.setJumpstr((((double) jump + jumpmin) / 100) * jumpmod);
 								thisMount.setHealth((double) health + healthmin);
 								thisMount.setChest(false);
-								thisMount.setSaddle(new ItemStack(
-										Material.SADDLE, 1));
+								thisMount.setSaddle(new ItemStack(Material.SADDLE, 1));
 							}
 
 							spawnMount(player, thisMount, npc, true);
@@ -1171,8 +1120,7 @@ public class Menu implements Listener {
 		@EventHandler
 		void onInventoryClose(InventoryCloseEvent event) {
 
-			if (event.getInventory().getTitle().equals(name)
-					&& event.getPlayer().equals(this.player)) {
+			if (event.getInventory().getTitle().equals(name) && event.getPlayer().equals(this.player)) {
 				Player player = (Player) event.getPlayer();
 				npcMap.remove(player);
 				HandlerList.unregisterAll(this);

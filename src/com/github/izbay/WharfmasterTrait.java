@@ -39,14 +39,17 @@ public class WharfmasterTrait extends Trait implements Listener {
 		if (this.npc != event.getNPC()) {
 			return;
 		}
+		
 		final Player player = event.getClicker();
 		StableAcct acct;
+		
 		if (!stablemgr.containsKey(player.getName())){
 			acct = plugin.sm.new StableAcct();
 			stablemgr.put(player.getName(), acct);
 		} else {
 			acct = stablemgr.get(player.getName());
 		}
+		
 		Entity vehicle = player.getVehicle();
 		Location loc = this.npc.getStoredLocation();
 		loc.add((player.getLocation().subtract(loc)).multiply(0.2));

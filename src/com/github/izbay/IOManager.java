@@ -36,7 +36,7 @@ public class IOManager {
 	private static FileConfiguration config;
 	private static YamlConfiguration lang = new YamlConfiguration();
 	private static String langsetting = "en";
-	private static String paid;
+	private static String paid;	// Paid in Full
 	
 	// public static Map<EntityType, Integer> mountPrice = new
 	// HashMap<EntityType, Integer>();

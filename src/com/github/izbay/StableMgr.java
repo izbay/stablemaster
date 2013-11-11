@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.server.v1_6_R3.AttributeInstance;
 import net.minecraft.server.v1_6_R3.EntityInsentient;
@@ -227,8 +228,9 @@ public class StableMgr implements Serializable {
 		private double speed;
 		private Map<String, Object> Armor;
 		private List<Map<String, Object>> Inventory = new ArrayList<Map<String, Object>>();
+		private String uuid;
 		
-		// Old format. Log this for updating.
+		// Old format. Grab this for updating.
 		private ItemSerializable armor;
 		private ItemSerializable[] inventory;
 		
@@ -348,6 +350,18 @@ public class StableMgr implements Serializable {
 				return ItemStack.deserialize(Armor);
 			return null;
 		}
+		
+		public ItemStack getSaddle() {
+			if(Inventory.size() == 0){
+				return null;
+			} else {
+				return ItemStack.deserialize(Inventory.get(0));
+			}
+		}
+		
+		public UUID getUUID(){
+			return (uuid == null)? null : UUID.fromString(uuid);
+		}
 
 		public ItemStack[] getInventory() {
 			updateInv();
@@ -416,11 +430,16 @@ public class StableMgr implements Serializable {
 			}
 		}
 		
+		public void setUUID(UUID uuid){
+			this.uuid = uuid.toString();
+		}
+		
 		private void updateInv(){
 			if(inventory != null){
-				for (int i = 0; i < inventory.length; i++){
+				Inventory = new ArrayList<Map<String, Object>>();
+				for (int i = 0; i < 17; i++){
 					ItemSerializable item = inventory[i];
-					Inventory.add((item==null)?null:item.getItemStack().serialize());
+					Inventory.add(item == null? null : item.getItemStack().serialize());
 				}
 				inventory = null;
 			}

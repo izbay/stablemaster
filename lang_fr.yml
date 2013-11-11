@@ -1,4 +1,4 @@
-# <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_Categorie> <MOUNT_PAMPERED>
+﻿# <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_TYPE> <MOUNT_PAMPERED>
 text:
   greet: "&eBonjour! Puis-je vous aider?"
   nil: "&cJe crains que je n'ai pas rien de la votre."
@@ -7,7 +7,7 @@ text:
   full: "&cJe crains que je suis tout hors de la piece!"
   give: "&eGreat! Voici <MOUNT_NAME>!"
   keep: "&eAh il semble que vous ne pouvez pas prendre <MOUNT_NAME> tout a l'heure. Revenez quand vous le pouvez."
-  broke: "&eVous venez de court. prenez l'<MOUNT_Categorie>. Je collectionne prochaine fois."
+  broke: "&eVous venez de court. prenez l'<MOUNT_TYPE>. Je collectionne prochaine fois."
   debt: "&eJ'ai encore besoin de vous le paiement de la derniere fois. il etait &a<DEBT>&e."
   paid: "&eMerci! Maintenant, ce que je peux faire pour vous?"
   stow: "&eNe vous inquietez pas! Je m'occuperai bien de <MOUNT_NAME>!"
@@ -16,7 +16,7 @@ text:
 
 noble:
   stow: "&eExcellent! Je m'inquiete pour <MOUNT_NAME> comme si c'etait le mien."
-  free: "&eTa grace! S'il vous plaît prendre ma plus belle <MOUNT_Categorie>. C'est un honneur!"
+  free: "&eTa grace! S'il vous plaît prendre ma plus belle <MOUNT_TYPE>. C'est un honneur!"
   give: "&eVoici <MOUNT_NAME>, votre grace. <MOUNT_PAMPERED>"
 
 stable:

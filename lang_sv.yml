@@ -1,4 +1,4 @@
-# <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_Categorie> <MOUNT_PAMPERED>
+# <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_TYPE> <MOUNT_PAMPERED>
 
 text:
   greet: "&eHalla! Kan jag hjalpa dig med nagot?"
@@ -8,7 +8,7 @@ text:
   full: "&cJag ar radd att jag allt ut ur rummet!"
   give: "&eStor! har finns <MOUNT_NAME>!"
   keep: "&eAh det verkar du inte kan ta just nu <MOUNT_NAME> Kom tillbaka nar du kan."
-  broke: "&eDu har kommit upp kort. Ta <MOUNT_Categorie>. Jag ska hamta nasta gang."
+  broke: "&eDu har kommit upp kort. Ta <MOUNT_TYPE>. Jag ska hamta nasta gang."
   debt: "&eJag behover fortfarande dig att betala upp fran forra gangen. Det var &a<DEBT>&e."
   paid: "&eTack! Nu vad kan jag gora for dig?"
   stow: "&eOroa dig inte! Jag tar bra hand om <MOUNT_NAME>!"
@@ -17,7 +17,7 @@ text:
 
 noble:
   stow: "&eUtmarkt! Jag ska ta hand om <MOUNT_NAME> som om det vore mitt eget."
-  free: "&eDin nad ! Vanligen ta mitt finaste <MOUNT_Categorie>.  Det ar en ara!"
+  free: "&eDin nad ! Vanligen ta mitt finaste <MOUNT_TYPE>.  Det ar en ara!"
   give: "&eHar ar <MOUNT_NAME>, din nad. <MOUNT_PAMPERED>"
 
 stable:
