@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
  
+
+
+
+import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +19,10 @@ import org.bukkit.material.MaterialData;
  * @author Geekola @ bukkitdev
  *
  */
+
+/* Some fields are deprecated, but left in because ItemSerializable will be nixxed
+ * in favor of item.serialize.  Use this old method of loading to update users to 
+ * the new format in StableMgr at runtime. */
 public class ItemSerializable implements Serializable {
  
  
@@ -25,9 +33,9 @@ public class ItemSerializable implements Serializable {
 	private int amount;
 	private Map<String, Object> meta;
  
+	@SuppressWarnings("deprecation")
 	public ItemSerializable( ItemStack i ) {
- 
-		this.materialId = i.getTypeId();
+		this.materialId = i.getType().getId();
 		this.data	= i.getData().getData();
 		this.durability = i.getDurability();
 		this.amount = i.getAmount();
@@ -38,9 +46,10 @@ public class ItemSerializable implements Serializable {
  
 	}
  
+	@SuppressWarnings("deprecation")
 	public ItemStack getItemStack() {
- 
-		ItemStack i = new ItemStack( this.materialId );
+		Material m = Material.getMaterial(materialId);
+		ItemStack i = new ItemStack(m);
 		i.setAmount( this.amount );
 		i.setDurability( this.durability );
 		i.setData( new MaterialData( this.data ) );
