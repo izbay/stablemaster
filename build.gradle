@@ -53,6 +53,10 @@ sourceSets {
 			srcDir "$projectDir"
 			include 'plugin.yml'
 			include 'config.yml'
+			include 'lang_de.yml'
+			include 'lang_en.yml'
+			include 'lang_fr.yml'
+			include 'lang_sv.yml'
 		}
 	}
 }
