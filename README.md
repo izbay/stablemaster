@@ -1,4 +1,3 @@
-Forked from Izbay's Stablemaster to provide support for Newest Bukkit and Citizen's Builds.
 
 stablemaster
 ============
