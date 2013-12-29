@@ -1,14 +1,14 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.minecraft.server.v1_6_R3.AttributeInstance;
-import net.minecraft.server.v1_6_R3.EntityInsentient;
-import net.minecraft.server.v1_6_R3.GenericAttributes;
+import net.minecraft.server.v1_7_R1.AttributeInstance;
+import net.minecraft.server.v1_7_R1.EntityInsentient;
+import net.minecraft.server.v1_7_R1.GenericAttributes;
 
-import org.bukkit.craftbukkit.v1_6_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
 
 //import plugin.Nogtail.nHorses.*;
 import net.citizensnpcs.api.npc.NPC;
@@ -31,12 +31,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import com.github.izbay.IOManager.Action;
-import com.github.izbay.IOManager.Colors;
-import com.github.izbay.IOManager.Interface;
-import com.github.izbay.IOManager.MountNames;
-import com.github.izbay.StableMgr.Mount;
-import com.github.izbay.StableMgr.StableAcct;
+import com.github.izbay.stablemaster.IOManager.Action;
+import com.github.izbay.stablemaster.IOManager.Colors;
+import com.github.izbay.stablemaster.IOManager.Interface;
+import com.github.izbay.stablemaster.IOManager.MountNames;
+import com.github.izbay.stablemaster.StableMgr.Mount;
+import com.github.izbay.stablemaster.StableMgr.StableAcct;
 
 /**
  * @author izbay The bulk of stablemaster logic is handled here. By using

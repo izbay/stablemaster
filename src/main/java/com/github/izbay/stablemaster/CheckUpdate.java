@@ -1,4 +1,4 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.io.BufferedReader;
 import java.io.IOException;

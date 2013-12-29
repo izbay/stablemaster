@@ -1,4 +1,4 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,8 +20,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.izbay.StableMgr.Mount;
-import com.github.izbay.StableMgr.StableAcct;
+import com.github.izbay.stablemaster.StableMgr.Mount;
+import com.github.izbay.stablemaster.StableMgr.StableAcct;
 import com.google.common.io.Files;
 
 /**
