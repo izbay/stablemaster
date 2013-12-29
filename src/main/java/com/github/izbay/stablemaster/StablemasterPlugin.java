@@ -51,8 +51,7 @@ public class StablemasterPlugin extends JavaPlugin {
 		// If configured to do so, check the latest version on BukkitDEV and
 		// alert if user is out of date.
 		if (config.getBoolean("check-update")) {
-			@SuppressWarnings("unused")
-			CheckUpdate updater = new CheckUpdate(this, 47312);
+			new Thread(new CheckUpdate(this)).start();
 		}
 
 		File stable = new File(getDataFolder() + File.separator + "stable.bin");

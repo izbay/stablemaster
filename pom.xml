@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.izbay</groupId>
     <artifactId>stablemaster</artifactId>
-    <version>1.12</version>
+    <version>1.11</version>
     <name>StablemasterPlugin</name>
     <repositories>
         <repository>
@@ -34,10 +34,8 @@
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
+            <artifactId>bukkit</artifactId>
             <version>1.7.2-R0.3-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.milkbowl</groupId>
@@ -59,6 +57,11 @@
             <version>BETA-2.0.6</version>
             <systemPath>${project.basedir}/lib/CitiTrader-BETA-2.0.jar</systemPath>
             <scope>system</scope>
-        </dependency>       
+        </dependency>
+        <dependency>
+        	<groupId>org.bukkit</groupId>
+        	<artifactId>craftbukkit</artifactId>
+        	<version>1.7.2-R0.3-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
