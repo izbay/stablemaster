@@ -1,4 +1,4 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.izbay.IOManager.Action;
-import com.github.izbay.StableMgr.StableAcct;
+import com.github.izbay.stablemaster.IOManager.Action;
+import com.github.izbay.stablemaster.StableMgr.StableAcct;
 
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;

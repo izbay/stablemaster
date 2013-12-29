@@ -1,4 +1,4 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,8 +20,8 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.izbay.StableMgr.Mount;
-import com.github.izbay.StableMgr.StableAcct;
+import com.github.izbay.stablemaster.StableMgr.Mount;
+import com.github.izbay.stablemaster.StableMgr.StableAcct;
 import com.google.common.io.Files;
 
 /**
@@ -51,8 +51,7 @@ public class StablemasterPlugin extends JavaPlugin {
 		// If configured to do so, check the latest version on BukkitDEV and
 		// alert if user is out of date.
 		if (config.getBoolean("check-update")) {
-			@SuppressWarnings("unused")
-			CheckUpdate updater = new CheckUpdate(this, 47312);
+			new Thread(new CheckUpdate(this)).start();
 		}
 
 		File stable = new File(getDataFolder() + File.separator + "stable.bin");

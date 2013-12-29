@@ -1,4 +1,4 @@
-package com.github.izbay;
+package com.github.izbay.stablemaster;
 
 import java.io.File;
 import java.util.Arrays;
@@ -18,9 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.izbay.StableMgr.Mount;
-import com.github.izbay.StableMgr.StableAcct;
-import com.github.izbay.StablemasterPlugin;
+import com.github.izbay.stablemaster.StableMgr.Mount;
+import com.github.izbay.stablemaster.StableMgr.StableAcct;
+import com.github.izbay.stablemaster.StablemasterPlugin;
 
 import me.tehbeard.cititrader.WalletTrait;
 import net.citizensnpcs.api.npc.NPC;
