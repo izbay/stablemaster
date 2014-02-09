@@ -22,7 +22,6 @@ import com.github.izbay.stablemaster.StableMgr.Mount;
 import com.github.izbay.stablemaster.StableMgr.StableAcct;
 import com.github.izbay.stablemaster.StablemasterPlugin;
 
-import me.tehbeard.cititrader.WalletTrait;
 import net.citizensnpcs.api.npc.NPC;
 import net.milkbowl.vault.economy.Economy;
 
@@ -32,7 +31,6 @@ import net.milkbowl.vault.economy.Economy;
  */
 public class IOManager {
 	private static Economy economy;
-	private static boolean hasCitiTrader;
 	private static FileConfiguration config;
 	private static YamlConfiguration lang = new YamlConfiguration();
 	private static String langsetting = "en";
@@ -64,7 +62,7 @@ public class IOManager {
 	
 	public static void init(StablemasterPlugin plugin) throws Exception{
 		economy = plugin.economy;
-		hasCitiTrader = plugin.hasCitiTrader;
+		//hasCitiTrader = plugin.hasCitiTrader;
 		config = plugin.config;
 		ioManager = new IOManager();
 		
@@ -326,11 +324,11 @@ public class IOManager {
 	public static boolean charge(NPC npc, Player player, double cost) {
 		if (canAfford(player, cost)) {
 			economy.withdrawPlayer(player.getName(), cost);
-			if (hasCitiTrader) {
-				if (npc.hasTrait(WalletTrait.class)) {
-					npc.getTrait(WalletTrait.class).deposit(cost);
-				}
-			}
+//			if (hasCitiTrader) {
+//				if (npc.hasTrait(WalletTrait.class)) {
+//					npc.getTrait(WalletTrait.class).deposit(cost);
+//				}
+//			}
 			if (!messages.get(Action.pay).equals("") && cost > 0)
 				player.sendMessage(format(
 						Action.pay,

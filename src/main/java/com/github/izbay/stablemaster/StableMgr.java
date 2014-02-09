@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_7_R1.entity.CraftLivingEntity;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Horse.Color;
@@ -269,13 +270,16 @@ public class StableMgr implements Serializable {
 			this.color = horse.getColor();
 			this.style = horse.getStyle();
 			this.haschest = horse.isCarryingChest();
-			this.health = horse.getMaxHealth();
+			this.health = ((Damageable)horse).getMaxHealth();
 			this.jumpstr = horse.getJumpStrength();
 
 			AttributeInstance attributes = ((EntityInsentient) ((CraftLivingEntity) horse)
 					.getHandle()).getAttributeInstance(GenericAttributes.d);
 			this.speed = attributes.getValue();
-
+			ItemStack saddle = horse.getInventory().getSaddle();
+			if (saddle != null){
+				setSaddle(saddle);
+			}
 			if (horse.getInventory().getArmor() != null)
 				this.Armor = new ItemStack(horse.getInventory()
 						.getArmor()).serialize();
