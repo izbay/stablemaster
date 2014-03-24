@@ -172,6 +172,7 @@ public class Menu implements Listener {
 				if (mount.HasChest()) {
 					((Horse) newMount).getInventory().setContents(mount.getInventory());
 				}
+				
 				((Horse) newMount).getInventory().setSaddle(mount.getSaddle());
 				((Horse) newMount).getInventory().setArmor(mount.getArmor());
 				((Horse) newMount).setTamed(true);
@@ -907,10 +908,10 @@ public class Menu implements Listener {
 		@EventHandler
 		void onInventoryClick(InventoryClickEvent event) {
 			boolean validSlot = (event.getRawSlot() <= 26 && event.getRawSlot() >= 0);
-			boolean thisPlayer = (Player) event.getWhoClicked() == this.player;
-
+			
 			if (event.getInventory().getTitle().equals(name) && validSlot) {
 				event.setCancelled(true);
+				boolean thisPlayer = (Player) event.getWhoClicked() == this.player;
 
 				if (thisPlayer) {
 					final Player player = (Player) event.getWhoClicked();

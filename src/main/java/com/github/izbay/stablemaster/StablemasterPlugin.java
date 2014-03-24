@@ -33,7 +33,7 @@ public class StablemasterPlugin extends JavaPlugin {
 	public static StablemasterPlugin plugin;
 	public FileConfiguration config;
 	public Economy economy;
-	public boolean hasCitiTrader;
+	//public boolean hasCitiTrader;
 	public StableMgr sm = new StableMgr();
 
 	@Override
@@ -74,8 +74,8 @@ public class StablemasterPlugin extends JavaPlugin {
 		}
 
 		// Check for Optionals
-		hasCitiTrader = (getServer().getPluginManager().getPlugin("CitiTrader") != null);
-		Menu.hasnHorses = (getServer().getPluginManager().getPlugin("nHorses") != null);
+		//hasCitiTrader = (getServer().getPluginManager().getPlugin("CitiTrader") != null);
+		//Menu.hasnHorses = (getServer().getPluginManager().getPlugin("nHorses") != null);
 
 		// Setup Vault
 		RegisteredServiceProvider<Economy> economyProvider = getServer()
