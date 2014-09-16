@@ -297,6 +297,7 @@ public class IOManager {
 		return "§c" + economy.format(cost);
 	}
 
+	@SuppressWarnings("deprecation")
 	private static boolean canAfford(Player player, double cost) {
 		return economy.getBalance(player.getName()) >= cost;
 	}
@@ -321,6 +322,7 @@ public class IOManager {
 		return econFormat(player, acct.getDebt());
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean charge(NPC npc, Player player, double cost) {
 		if (canAfford(player, cost)) {
 			economy.withdrawPlayer(player.getName(), cost);
@@ -343,6 +345,7 @@ public class IOManager {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static void pickUpCharge(NPC npc, Player player, StableAcct acct,
 			double cost, Mount mount) {
 		if (canAfford(player, cost)) {
