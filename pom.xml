@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.izbay</groupId>
     <artifactId>stablemaster</artifactId>
-    <version>1.12</version>
+    <version>1.13</version>
     <name>StablemasterPlugin</name>
     <repositories>
         <repository>
@@ -11,7 +11,7 @@
         </repository>
         <repository>
         		<id>vault-repo</id>
-        		<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+        		<url>http://nexus.theyeticave.net/content/repositories/pub_releases/</url>
         </repository>
         <repository>
         		<id>citizens2-repo</id>
@@ -35,33 +35,35 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.2-R0.3-SNAPSHOT</version>
+            <version>1.7.9-R0.2</version>
         </dependency>
         <dependency>
-            <groupId>net.milkbowl</groupId>
-            <artifactId>vault</artifactId>
-            <version>1.2.27-SNAPSHOT</version>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.4.1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
             <artifactId>citizens</artifactId>
-            <version>2.0.11-SNAPSHOT</version>
+            <version>2.0.13-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>me.tehbeard.cititrader</groupId>
             <artifactId>CitiTrader</artifactId>
-            <version>BETA-2.0.6</version>
-            <systemPath>${project.basedir}/lib/CitiTrader-BETA-2.0.jar</systemPath>
+            <version>BETA-2.0.7</version>
+            <systemPath>${project.basedir}/lib/CitiTrader-BETA-2.0.7.jar</systemPath>
             <scope>system</scope>
         </dependency>
         <dependency>
-        	<groupId>org.bukkit</groupId>
-        	<artifactId>craftbukkit</artifactId>
-        	<version>1.7.2-R0.3-SNAPSHOT</version>
+        	   <groupId>org.bukkit</groupId>
+        	   <artifactId>craftbukkit</artifactId>
+        	   <version>1.7.9-R0.2</version>
+        	   <systemPath>${project.basedir}/lib/craftbukkit-1.7.9-r02.jar</systemPath>
+            <scope>system</scope>
         </dependency>
     </dependencies>
 </project>

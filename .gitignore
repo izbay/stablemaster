@@ -15,6 +15,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+/lib/craftbukkit-1.7.9-r02.jar
 
 # External tool builders
 .externalToolBuilders/
