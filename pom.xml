@@ -2,16 +2,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.izbay</groupId>
     <artifactId>stablemaster</artifactId>
-    <version>1.13</version>
+    <version>1.14</version>
     <name>StablemasterPlugin</name>
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
-        </repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		  </repository>
         <repository>
-        		<id>vault-repo</id>
-        		<url>http://nexus.theyeticave.net/content/repositories/pub_releases/</url>
+	         <id>vault-repo</id>
+	         <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
         <repository>
         		<id>citizens2-repo</id>
@@ -35,7 +35,9 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
-            <version>1.7.9-R0.2</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.milkbowl.vault</groupId>
@@ -46,24 +48,17 @@
         </dependency>
         <dependency>
             <groupId>net.citizensnpcs</groupId>
-            <artifactId>citizens</artifactId>
-            <version>2.0.13-SNAPSHOT</version>
+            <artifactId>citizensapi</artifactId>
+            <version>2.0.22-SNAPSHOT</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>me.tehbeard.cititrader</groupId>
-            <artifactId>CitiTrader</artifactId>
-            <version>BETA-2.0.7</version>
-            <systemPath>${project.basedir}/lib/CitiTrader-BETA-2.0.7.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
-        <dependency>
         	   <groupId>org.bukkit</groupId>
         	   <artifactId>craftbukkit</artifactId>
-        	   <version>1.7.9-R0.2</version>
-        	   <systemPath>${project.basedir}/lib/craftbukkit-1.7.9-r02.jar</systemPath>
-            <scope>system</scope>
+        	   <version>1.12.2-R0.1-SNAPSHOT</version>
+        	   <type>jar</type>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

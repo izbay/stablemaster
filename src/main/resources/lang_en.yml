@@ -22,6 +22,9 @@ noble:
 stable:
   random-names: "Petunia, Buddy, Stella, Herbert, Emett, Jebediah, Sully, Professor, Farley, Mickey"
   paid: "Paid in Full"
+  speed: "&e&oSpeed"
+  jump: "&a&oJump"
+  health: "&c&oHealth"
   pampered: "Bathed, brushed, and pampered!"
 wharf:
   pampered: "I even scrubbed down the hull!"
@@ -50,12 +53,14 @@ titles:
   prevSpeed: "&aPrevious"
   prevColor: "&aPrevious"
   prevPattern: "&aPrevious"
+  prevCarpetColor: "&aPrevious"
   nextType: "&aNext"
   nextHealth: "&aNext"
   nextJump: "&aNext"
   nextSpeed: "&aNext"
   nextColor: "&aNext"
   nextPattern: "&aNext"
+  nextCarpetColor: "&aNext"
 
 interface:
   pickup: "&fI'd like to pick up my mount!"
@@ -73,12 +78,14 @@ interface:
   prevSpeed: "&fSpeed"
   prevColor: "&fColor"
   prevPattern: "&fPattern"
+  prevCarpetColor: "&fCarpet Color"
   nextType: "&fType"
   nextHealth: "&fHealth"
   nextJump: "&fJump"
   nextSpeed: "&fSpeed"
   nextColor: "&fColor"
   nextPattern: "&fPattern"
+  nextCarpetColor: "&fCarpet Color"
 
 nobletitles:
   pickup: "&aPickup"
@@ -111,19 +118,47 @@ mounts:
   horse: "&aHorse"
   mule: "&aMule"
   donkey: "&aDonkey"
+  llama: "&aLlama"
   skeleton: "&aSkeleton"
   zombie: "&aZombie"
 
-colors:
-  white: "&aWhite"
-  buckskin: "&aBuckskin"
-  chestnut: "&fChestnut"
-  bay: "&fBay"
+horsecolors:
   black: "&aBlack"
-  dapple: "&aDapple"
-  liver: "&aLiver Chestnut"
+  brown: "&aBrown"
+  chestnut: "&aChestnut"
+  creamy: "&aCreamy"
+  dark_brown: "&aDark Brown"
+  gray: "&aGray"
+  white: "&aWhite"
+   
+horsepatterns:
   plain: "&aPlain"
-  blaze: "&aBlaze"
-  paint: "&aPaint"
-  appaloosa: "&aAppaloosa"
-  sooty: "&aSooty"
+  black_dots: "&aBlack Dots"
+  white: "&aWhite Paint"
+  white_dots: "&aWhite Dots"
+  whitefield: "&aWhitefield"
+  
+llamacolors:
+  brown: "&aBrown"
+  creamy: "&aCreamy"
+  gray: "&aGray"
+  white: "&aWhite"
+  
+carpetcolors:
+  nocarpet: "&aNo Carpet"
+  black: "&aBlack"
+  blue: "&aBlue"
+  brown: "&aBrown"
+  cyan: "&aCyan"
+  gray: "&aGray"
+  green: "&aGreen"
+  light_blue: "&aLight Blue"
+  lime: "&aLime"
+  magenta: "&aMagenta"
+  orange: "&aOrange"
+  pink: "&aPink"
+  purple: "&aPurple"
+  red: "&aRed"
+  silver: "&aSilver"
+  white: "&aWhite"
+  yellow: "&aYellow"

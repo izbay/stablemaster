@@ -5,20 +5,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.github.izbay.stablemaster.StableMgr.Mount;
+import com.github.izbay.stablemaster.Mount;
 import com.github.izbay.stablemaster.StableMgr.StableAcct;
 import com.github.izbay.stablemaster.StablemasterPlugin;
 
@@ -35,12 +35,15 @@ public class IOManager {
 	private static YamlConfiguration lang = new YamlConfiguration();
 	private static String langsetting = "en";
 	private static String paid;	// Paid in Full
+	public static String speed; // speed lang
+	public static String jump; //jump lang
+	public static String health; // health lang
 	
 	// public static Map<EntityType, Integer> mountPrice = new
 	// HashMap<EntityType, Integer>();
 	private static Map<Action, String> messages = new HashMap<Action, String>();
 	private static Map<Action, String> nobleMsg = new HashMap<Action, String>();
-	private static Map<Icons, Material> icons = new HashMap<Icons, Material>();
+	private static Map<Icons, ItemStack> icons = new HashMap<Icons, ItemStack>();
 	private static Map<Interface, String> interfaceTitle = new HashMap<Interface, String>();
 	private static Map<Interface, String> interfaceText = new HashMap<Interface, String>();
 	private static Map<Interface, String> NinterfaceTitle = new HashMap<Interface, String>();
@@ -49,15 +52,18 @@ public class IOManager {
 	private static String[] namesList;
 
 	public static Map<String, Double> mountPrice = new HashMap<String, Double>();
-	public static Map<Colors, String> colorsMap = new HashMap<Colors, String>();
+	public static Map<HorseColors, String> horseColorsMap = new HashMap<HorseColors, String>();
+	public static Map<HorsePatterns, String> horsePatternsMap = new HashMap<HorsePatterns, String>();
+	public static Map<LlamaColors, String> llamaColorsMap = new HashMap<LlamaColors, String>();
+	public static Map<CarpetColors, String> carpetColorsMap = new HashMap<CarpetColors, String>();
 	public static Map<MountNames, String> mountNames = new HashMap<MountNames, String>();
 	public static IOManager ioManager;
 	public static int minjump;
 	public static int maxjump;
-	public static int modjump;
+	public static double modjump;
 	public static int minspeed;
 	public static int maxspeed;
-	public static int modspeed;
+	public static double modspeed;
 	
 	
 	public static void init(StablemasterPlugin plugin) throws Exception{
@@ -124,14 +130,40 @@ public class IOManager {
 			}
 		}
 		
-		for (Colors e: Colors.values()){
-			if(lang.contains("colors." + e.toString())){
-				colorsMap.put(e, colorCodes(lang.getString("colors." + e.toString())));
+		for (HorseColors e: HorseColors.values()){
+			if(lang.contains("horsecolors." + e.toString())){
+				horseColorsMap.put(e, colorCodes(lang.getString("horsecolors." + e.toString())));
 			} else {
-				colorsMap.put(e, e.toString()+" not found.");
+				horseColorsMap.put(e, e.toString()+" not found.");
 			}
 		}
-
+		
+		for (HorsePatterns e: HorsePatterns.values()){
+			if(lang.contains("horsepatterns." + e.toString())){
+				horsePatternsMap.put(e, colorCodes(lang.getString("horsepatterns." + e.toString())));
+			} else {
+				horsePatternsMap.put(e, e.toString()+" not found.");
+			}
+		}
+		
+		for (LlamaColors e: LlamaColors.values()){
+			if(lang.contains("llamacolors." + e.toString())){
+				llamaColorsMap.put(e, colorCodes(lang.getString("llamacolors." + e.toString())));
+			} else {
+				llamaColorsMap.put(e, e.toString()+" not found.");
+			}
+		}
+		
+		for (CarpetColors e: CarpetColors.values()){
+			if(lang.contains("carpetcolors." + e.toString())){
+				carpetColorsMap.put(e, colorCodes(lang.getString("carpetcolors." + e.toString())));
+			} else {
+				carpetColorsMap.put(e, e.toString()+" not found.");
+			}
+		}
+        speed = lang.getString("stable.speed");
+        jump = lang.getString("stable.jump");
+        health = lang.getString("stable.health");
 		paid = lang.getString("stable.paid");
 	}
 	
@@ -148,19 +180,27 @@ public class IOManager {
 		
 		for (Icons e: Icons.values()){
 			if(config.contains("icons." + e.toString())){
-				icons.put(e, Material.valueOf(config.getString("icons." + e.toString())));
+				if(config.getString("icons." + e.toString()).contains(";")){
+					String[] split = (config.getString("icons." + e.toString())).split(";");
+					String material = split[0];
+					String dataValue = split[1];
+					Byte value = Byte.valueOf(dataValue);
+					icons.put(e, new ItemStack(Material.valueOf(material), 1, (byte)value));
+				}else{
+					icons.put(e, new ItemStack(Material.valueOf(config.getString("icons." + e.toString())), 1));
+				}
 			} else {
-				icons.put(e, Material.AIR);
+				icons.put(e, new ItemStack(Material.AIR, 1));
 			}
 			
 		}
 		
 		minspeed = config.getInt("stable.min-speed");
 		maxspeed = config.getInt("stable.max-speed");
-		modspeed = config.getInt("stable.mod-speed");
+		modspeed = config.getDouble("stable.mod-speed");
 		minjump = config.getInt("stable.min-jump");
 		maxjump = config.getInt("stable.max-jump");
-		modjump = config.getInt("stable.mod-jump");
+		modjump = config.getDouble("stable.mod-jump");
 	}
 	
 	public static String getString(Interface inter, boolean noble){
@@ -211,7 +251,8 @@ public class IOManager {
 	 */
 	public static ItemStack makeButton(Icons icon, int amt, String option,
 			String subtext) {
-		ItemStack button = new ItemStack(icons.get(icon), amt);
+		ItemStack button = icons.get(icon);
+		button.setAmount(amt);
 		ItemMeta im = button.getItemMeta();
 		if (!option.equals(""))
 			im.setDisplayName(option);
@@ -226,7 +267,8 @@ public class IOManager {
 	}
 	
 	public static ItemStack makeButton(Icons icon, int amt, Interface inter, boolean noble) {
-		ItemStack button = new ItemStack(icons.get(icon), amt);
+		ItemStack button = icons.get(icon);
+		button.setAmount(amt);
 		ItemMeta im = button.getItemMeta();
 		String option, subtext;
 		if (noble){
@@ -249,7 +291,8 @@ public class IOManager {
 	}
 	
 	public static ItemStack makeButton(Icons icon, int amt, Interface inter, boolean noble, String price) {
-		ItemStack button = new ItemStack(icons.get(icon), amt);
+		ItemStack button = icons.get(icon);
+		button.setAmount(amt);
 		ItemMeta im = button.getItemMeta();
 		String option, subtext;
 		if (noble){
@@ -289,12 +332,12 @@ public class IOManager {
 
 	public static String econFormat(Player player, double cost) {
 		if (cost == 0)
-			return "§2" + paid;
+			return ChatColor.translateAlternateColorCodes('&', ("&2" + paid));
 		if (player == null)
-			return "§9" + economy.format(cost);
+			return ChatColor.translateAlternateColorCodes('&', ("&9" + economy.format(cost)));
 		if (canAfford(player, cost))
-			return "§6" + economy.format(cost);
-		return "§c" + economy.format(cost);
+			return ChatColor.translateAlternateColorCodes('&', ("&6" + economy.format(cost)));
+		return ChatColor.translateAlternateColorCodes('&', ("&c" + economy.format(cost)));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -367,12 +410,16 @@ public class IOManager {
 			}
 		}
 		if (vehicle.getType().equals(EntityType.HORSE)) {
-			if (((Horse) vehicle).getVariant().equals(Horse.Variant.MULE)) {
-				return "Mule";
-			} else if (((Horse) vehicle).getVariant().equals(
-					Horse.Variant.DONKEY)) {
-				return "Donkey";
-			}
+			return "Horse";
+		}
+		if (vehicle.getType().equals(EntityType.MULE)){
+			return "Mule";
+		}
+		if (vehicle.getType().equals(EntityType.DONKEY)){
+			return "Donkey";
+		}
+		if (vehicle.getType().equals(EntityType.LLAMA)){
+			return "Llama";
 		}
 		return vehicle.getClass().getSimpleName().replace("Craft", "");
 	}
@@ -438,7 +485,7 @@ public class IOManager {
 			if (i > 9) {
 				temp = "" + (char) (87 + i);
 			}
-			input = input.replace("&" + temp, "§" + temp);
+			input = input.replace("&" + temp, ChatColor.translateAlternateColorCodes('&', ("&" + temp)));
 		}
 		return input;
 	}
@@ -535,12 +582,14 @@ public class IOManager {
 		prevSpeed,
 		prevColor,
 		prevPattern,
+		prevCarpetColor,
 		nextType,
 		nextHealth,
 		nextJump,
 		nextSpeed,
 		nextColor,
-		nextPattern
+		nextPattern,
+		nextCarpetColor
 	};
 	
 	public static enum MountNames {
@@ -548,23 +597,54 @@ public class IOManager {
 		horse,
 		mule,
 		donkey,
+		llama,
 		skeleton,
 		zombie
 	};
 	
-	public static enum Colors {
-		white,
-		buckskin,
-		chestnut,
-		bay,
+	public static enum HorseColors {
 		black,
-		dapple,
-		liver,
+		brown,
+		chestnut,
+		creamy,
+		dark_brown,
+		gray,
+		white
+	};
+	
+	public static enum HorsePatterns {
 		plain,
-		blaze,
-		paint,
-		appaloosa,
-		sooty
+		black_dots,
+		white,
+		white_dots,
+		whitefield
+	};
+	
+	public static enum LlamaColors {
+		brown,
+		creamy,
+		gray,
+		white
+	};
+	
+	public static enum CarpetColors {
+		nocarpet,
+		black,
+		blue,
+		brown,
+		cyan,
+		gray,
+		green,
+		light_blue,
+		lime,
+		magenta,
+		orange,
+		pink,
+		purple,
+		red,
+		silver,
+		white,
+		yellow
 	};
 	
 	public static enum Icons {
@@ -581,23 +661,36 @@ public class IOManager {
 		horse,
 		donkey,
 		mule,
+		llama,
 		skeleton,
 		zombie,
 		health,
 		jump,
 		speed,
-		white,
-		buckskin,
-		chestnut,
-		bay,
 		black,
-		dapple,
-		liver,
+		brown,
+		chestnut,
+		creamy,
+		dark_brown,
+		gray,
+		white,
 		plain,
-		blaze,
-		paint,
-		appaloosa,
-		sooty,
+		black_dots,
+		white_dots,
+		whitefield,
+		nocarpet,
+		blue,
+		cyan,
+		green,
+		light_blue,
+		lime,
+		magenta,
+		orange,
+		pink,
+		purple,
+		red,
+		silver,
+		yellow,
 		buy,
 		exitBuy,
 		nil
@@ -608,6 +701,7 @@ public class IOManager {
 		horse,
 		donkey,
 		mule,
+		llama,
 		skeleton,
 		zombie,
 		boat,
@@ -615,6 +709,7 @@ public class IOManager {
 		health,
 		speed,
 		jump,
+		carpet,
 		noble
 	}
 
