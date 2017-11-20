@@ -7,11 +7,13 @@ mount-cost: #setting of > 0 disables sale. 0 enables free give-away.
   horse: 150
   donkey: 100
   mule: 100
+  llama: 100
   skeleton: 1000
-  zombie: -1
+  zombie: 1000
   health: 5
   speed: 15
   jump: 8
+  carpet: 500
   noble: 0.75
   geometricCost: "false" # NOT-ACTIVE Are health, speed, and jump multipliers instead of constants?
   tiered: "false" # NOT-ACTIVE Disregard previous 4 entries and cost by tier instead?
@@ -21,14 +23,14 @@ mount-cost: #setting of > 0 disables sale. 0 enables free give-away.
  
 stable:
   max-mounts: 27 #value of 0 = unlimited. Must be divisible by 9.
-  price-init: 4
+  price-init: 5
   price-per-day: 2
-  min-speed: 30
-  max-speed: 120
-  mod-speed: 1
+  min-speed: 10
+  max-speed: 50
+  mod-speed: 1.0
   min-jump: 30
-  max-jump: 120
-  mod-jump: 1.5
+  max-jump: 150
+  mod-jump: 1.0
 
 wharf:
   max-mounts: 64
@@ -54,22 +56,35 @@ icons:
   horse: "SADDLE"
   donkey: "APPLE"
   mule: "CHEST"
+  llama: "CARPET"
   skeleton: "BONE"
   zombie: "ROTTEN_FLESH"
   health: "RED_MUSHROOM"
   jump: "FENCE_GATE"
   speed: "FEATHER"
-  white: "SNOW_BLOCK"
-  buckskin: "WOOD"
-  chestnut: "HARD_CLAY"
-  bay: "SOUL_SAND"
   black: "COAL_BLOCK"
-  dapple: "STONE"
-  liver: "NETHER_BRICK"
-  plain: "LEATHER"
-  blaze: "GHAST_TEAR"
-  paint: "MILK_BUCKET"
-  appaloosa: "PUMPKIN_SEEDS"
-  sooty: "COAL"
+  brown: "WOOD"
+  chestnut: "HARD_CLAY"
+  creamy: "MILK_BUCKET"
+  dark_brown: "WOOD;5"
+  gray: "WOOL;7"
+  white: "SNOW_BLOCK"
+  plain: "GLASS"
+  black_dots: "MELON_SEEDS"
+  white_dots: "PUMPKIN_SEEDS"
+  whitefield: "GHAST_TEAR"
+  nocarpet: "GLASS"
+  blue: "WOOL;11"
+  cyan: "WOOL;9"
+  green: "WOOL;13"
+  light_blue: "WOOL;3"
+  lime: "WOOL;5"
+  magenta: "WOOL;2"
+  orange: "WOOL;1"
+  pink: "WOOL;6"
+  purple: "WOOL;10"
+  red: "WOOL;14"
+  silver: "WOOL;8"
+  yellow: "WOOL;4"
   buy: "GOLD_INGOT"
   exitBuy: "WOOD_DOOR"
