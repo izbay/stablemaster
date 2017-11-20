@@ -1,5 +1,4 @@
 # <BASE_PRICE> <PRICE_PER_DAY> <MOUNT_PRICE> <DEBT> <TOTAL_PRICE> <DAYS> <MOUNT_NAME> <MOUNT_TYPE> <MOUNT_PAMPERED>
-
 text:
   greet: "&eHalla! Kan jag hjalpa dig med nagot?"
   nil: "&cJag ar radd att jag inte har nagot till dig."
@@ -23,6 +22,9 @@ noble:
 stable:
   random-names: "Petunia, Buddy, Stella, Herbert, Emett, Jebediah, Sully, Professor, Farley, Mickey"
   paid: "Betalas i sin helhet"
+  speed: "&e&oFart"
+  jump: "&a&oHoppa"
+  health: "&c&oHälsa"
   pampered: "Badade , borstad och ompysslad!"
 wharf:
   pampered: "Jag aven rensat ned skrovet!"
@@ -51,12 +53,14 @@ titles:
   prevSpeed: "&aForegaende"
   prevColor: "&aForegaende"
   prevPattern: "&aForegaende"
+  prevCarpetColor: "&aForegaende"
   nextType: "&aNasta"
   nextHealth: "&aNasta"
   nextJump: "&aNasta"
   nextSpeed: "&aNasta"
   nextColor: "&aNasta"
   nextPattern: "&aNasta"
+  nextCarpetColor: "&aNasta"
 
 interface:
   pickup: "&fJag skulle vilja plocka upp min mount!"
@@ -74,12 +78,14 @@ interface:
   prevSpeed: "&fHastighet"
   prevColor: "&fFarg"
   prevPattern: "&fMonster"
+  prevCarpetColor: "&fMatt Färg"
   nextType: "&fTyp"
   nextHealth: "&fHalsa"
   nextJump: "&fHoppa"
   nextSpeed: "&fHastighet"
   nextColor: "&fFarg"
   nextPattern: "&fMonster"
+  nextCarpetColor: "&fMatt Färg"
 
 nobletitles:
   pickup: "&aPlocka Upp"
@@ -112,19 +118,47 @@ mounts:
   horse: "&aHast"
   mule: "&aMule"
   donkey: "&aAsne"
+  llama: "&aLama"
   skeleton: "&aSkelett"
   zombie: "&aZombie"
 
-colors:
-  white: "&aVit"
-  buckskin: "&aHjortlader"
-  chestnut: "&fKastanj"
-  bay: "&fBay"
+horsecolors:
   black: "&aSvart"
-  dapple: "&aFlackig"
-  liver: "&aFux"
-  plain: "&aVanligt"
-  blaze: "&aValdsamt utbrott"
-  paint: "&aMala"
-  appaloosa: "&aAppaloosa"
-  sooty: "&aSotiga"
+  brown: "&aBrun"
+  chestnut: "&aKastanj"
+  creamy: "&aKrämig"
+  dark_brown: "&aMörkbrun"
+  gray: "&aGrå"
+  white: "&aVit"
+   
+horsepatterns:
+  plain: "&aEnkel"
+  black_dots: "&aSvarta Prickar"
+  white: "&aVit Färg"
+  white_dots: "&aVita Prickar"
+  whitefield: "&aVitt Fält"
+  
+llamacolors:
+  brown: "&aBrun"
+  creamy: "&aKrämig"
+  gray: "&aGrå"
+  white: "&aVit"
+  
+carpetcolors:
+  nocarpet: "&aIngen Matta"
+  black: "&aSvart"
+  blue: "&aBlå"
+  brown: "&aBrun"
+  cyan: "&aCyan"
+  gray: "&aGrå"
+  green: "&aGrön"
+  light_blue: "&aLjusblå"
+  lime: "&aKalk"
+  magenta: "&aMagenta"
+  orange: "&aOrange"
+  pink: "&aRosa"
+  purple: "&aLila"
+  red: "&aRöd"
+  silver: "&aSilver"
+  white: "&aVit"
+  yellow: "&aGul"
